@@ -1,0 +1,264 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Auth API Tests",
+  "dateExported": "2024-03-14T10:00:00.000Z",
+  "version": "1.1",
+  "folders": [
+    {
+      "name": "Authentication",
+      "items": [
+        {
+          "name": "Register User",
+          "url": "{{baseUrl}}/api/auth/register",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "test@example.com",
+            "password": "Test123!@#",
+            "name": {
+              "first": "John",
+              "last": "Doe"
+            },
+            "phoneNumber": "+1234567890",
+            "username": "johndoe"
+          },
+          "expectedResponse": {
+            "status": 201,
+            "body": {
+              "success": true,
+              "message": "Registration successful. Please verify your email.",
+              "token": "jwt_token_here",
+              "user": {
+                "id": "user_id_here",
+                "name": "John Doe",
+                "email": "test@example.com",
+                "isVerified": false
+              }
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "url": "{{baseUrl}}/api/auth/login",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "test@example.com",
+            "password": "Test123!@#"
+          },
+          "expectedResponse": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "token": "jwt_token_here",
+              "user": {
+                "id": "user_id_here",
+                "name": "John Doe",
+                "email": "test@example.com",
+                "role": "user",
+                "isVerified": true
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "url": "{{baseUrl}}/api/auth/verify-email/:token",
+          "method": "GET",
+          "expectedResponse": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "message": "Email verified successfully"
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "url": "{{baseUrl}}/api/auth/forgot-password",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "test@example.com"
+          },
+          "expectedResponse": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "message": "Password reset email sent"
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "url": "{{baseUrl}}/api/auth/reset-password/:token",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "password": "NewTest123!@#"
+          },
+          "expectedResponse": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "message": "Password reset successful"
+            }
+          }
+        },
+        {
+          "name": "Verify Email - Valid Token",
+          "url": "{{baseUrl}}/api/auth/verify-email/{{verificationToken}}",
+          "method": "GET",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "expectedResponse": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "message": "Email verified successfully"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Cases",
+      "items": [
+        {
+          "name": "Register - Invalid Email",
+          "url": "{{baseUrl}}/api/auth/register",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "invalid-email",
+            "password": "Test123!@#",
+            "name": {
+              "first": "John",
+              "last": "Doe"
+            },
+            "phoneNumber": "+1234567890",
+            "username": "johndoe"
+          },
+          "expectedResponse": {
+            "status": 400,
+            "body": {
+              "success": false,
+              "errors": {
+                "email": "Please provide a valid email address"
+              }
+            }
+          }
+        },
+        {
+          "name": "Login - Invalid Credentials",
+          "url": "{{baseUrl}}/api/auth/login",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "test@example.com",
+            "password": "wrongpassword"
+          },
+          "expectedResponse": {
+            "status": 401,
+            "body": {
+              "success": false,
+              "message": "Invalid email or password"
+            }
+          }
+        },
+        {
+          "name": "Reset Password - Invalid Token",
+          "url": "{{baseUrl}}/api/auth/reset-password/invalid-token",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "password": "NewTest123!@#"
+          },
+          "expectedResponse": {
+            "status": 400,
+            "body": {
+              "success": false,
+              "message": "Invalid or expired reset token"
+            }
+          }
+        },
+        {
+          "name": "Verify Email - Invalid Token",
+          "url": "{{baseUrl}}/api/auth/verify-email/invalid-token",
+          "method": "GET",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "expectedResponse": {
+            "status": 400,
+            "body": {
+              "success": false,
+              "message": "Invalid or expired verification token"
+            }
+          }
+        },
+        {
+          "name": "Verify Email - Expired Token",
+          "url": "{{baseUrl}}/api/auth/verify-email/{{expiredToken}}",
+          "method": "GET",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "expectedResponse": {
+            "status": 400,
+            "body": {
+              "success": false,
+              "message": "Invalid or expired verification token"
+            }
+          }
+        },
+        {
+          "name": "Verify Email - Already Verified",
+          "url": "{{baseUrl}}/api/auth/verify-email/{{verificationToken}}",
+          "method": "GET",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "expectedResponse": {
+            "status": 400,
+            "body": {
+              "success": false,
+              "message": "Email is already verified"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "variables": [
+      {
+        "name": "baseUrl",
+        "value": "http://localhost:3000"
+      },
+      {
+        "name": "verificationToken",
+        "value": ""
+      },
+      {
+        "name": "expiredToken",
+        "value": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+.register {
+  padding: 5rem 0;
+  background-color: #1E1E1E;
+  color: #E0E0E0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #242424;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #3949AB;
+}
+
+.register__form-group {
+  margin-bottom: 1.5rem;
+}
+
+.register__form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.register__form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #1A1A1A;
+  color: #E0E0E0;
+  font-size: 1rem;
+}
+
+.register__form-group input:focus {
+  outline: none;
+  border: 1px solid #3949AB;
+}
+
+.register__form-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3949AB;
+  color: white;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.register__form-button:hover {
+  background: #90A4AE;
+}
+
+.register__social-login {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.register__social-login p {
+  margin-bottom: 1rem;
+}
+
+.social-button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.social-button.google {
+  background: #DB4437;
+}
+
+.social-button.facebook {
+  background: #3B5998;
+}
+
+.social-button.twitter {
+  background: #1DA1F2;
+}
+
+.social-button:hover {
+  opacity: 0.8;
+} 
