@@ -1,12 +1,12 @@
 import React from 'react';
-import Header from './layout/Header/Header';
-import Hero from './sections/Hero/Hero';
-import Features from './sections/Features/Features';
-import Showcase from './sections/Showcase/Showcase';
-import Testimonials from './sections/Testimonials/Testimonials';
-import Contact from './sections/Contact/Contact';
-import Footer from './layout/Footer/Footer';
-import './HomePage.css';
+import Header from './layout/Header';
+import Hero from './sections/Hero';
+import Features from './sections/Features';
+import Showcase from './sections/Showcase';
+import Testimonials from './sections/Testimonials';
+import Contact from './sections/Contact';
+import Footer from './layout/Footer';
+//import './HomePage.css';
 
 const HomePage = () => {
   return (
