@@ -11,6 +11,87 @@ const addressSchema = new mongoose.Schema({
     country: String
 });
 
+const emailSchema = new mongoose.Schema({
+    address: {
+        type: String,
+        required: true,
+        validate: {
+            validator: isValidEmail,
+            message: 'Please provide a valid email address'
+        }
+    },
+    isPrimary: {
+        type: Boolean,
+        default: false
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    verificationToken: String,
+    verificationExpires: Date,
+    addedAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+const notificationSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['system', 'car', 'message', 'alert'],
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    message: {
+        type: String,
+        required: true
+    },
+    read: {
+        type: Boolean,
+        default: false
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    link: String,
+    metadata: mongoose.Schema.Types.Mixed
+});
+
+const activitySchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['view', 'save', 'compare', 'search'],
+        required: true
+    },
+    carId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Car'
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now
+    },
+    metadata: mongoose.Schema.Types.Mixed
+});
+
+const savedCarSchema = new mongoose.Schema({
+    carId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Car',
+        required: true
+    },
+    savedAt: {
+        type: Date,
+        default: Date.now
+    },
+    notes: String
+});
+
 const userSchema = new mongoose.Schema({
     name: {
         first: {
@@ -37,6 +118,8 @@ const userSchema = new mongoose.Schema({
             message: 'Please provide a valid email address'
         }
     },
+    emails: [emailSchema],
+    notifications: [notificationSchema],
     password: {
         type: String,
         required: [true, 'Password is required'],
@@ -82,7 +165,47 @@ const userSchema = new mongoose.Schema({
             min: Number,
             max: Number
         },
-        favoriteBrands: [String]
+        favoriteBrands: [String],
+        notifications: {
+            email: {
+                type: Boolean,
+                default: true
+            },
+            push: {
+                type: Boolean,
+                default: true
+            },
+            carAlerts: {
+                type: Boolean,
+                default: true
+            },
+            priceDrops: {
+                type: Boolean,
+                default: true
+            },
+            newListings: {
+                type: Boolean,
+                default: true
+            },
+            messages: {
+                type: Boolean,
+                default: true
+            }
+        },
+        privacy: {
+            showProfile: {
+                type: Boolean,
+                default: true
+            },
+            showActivity: {
+                type: Boolean,
+                default: true
+            },
+            showSavedCars: {
+                type: Boolean,
+                default: true
+            }
+        }
     },
     socialLogin: {
         google: {
@@ -115,7 +238,9 @@ const userSchema = new mongoose.Schema({
     passwordResetToken: String,
     passwordResetExpires: Date,
     emailVerificationToken: String,
-    emailVerificationExpires: Date
+    emailVerificationExpires: Date,
+    activity: [activitySchema],
+    savedCars: [savedCarSchema]
 }, {
     timestamps: true // Adds createdAt and updatedAt fields
 });
@@ -170,7 +295,7 @@ userSchema.methods.createEmailVerificationToken = function() {
         .update(verificationToken)
         .digest('hex');
         
-    this.emailVerificationExpires = Date.now() + 86400000; // 24 hours
+    this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
     
     return verificationToken;
 };
@@ -180,6 +305,51 @@ userSchema.index({ email: 1 });
 userSchema.index({ 'socialLogin.google.id': 1 });
 userSchema.index({ 'socialLogin.facebook.id': 1 });
 userSchema.index({ 'socialLogin.twitter.id': 1 });
+
+// Add methods to handle additional emails
+userSchema.methods.addEmail = async function(emailAddress) {
+    if (this.emails.length >= 3) {
+        throw new Error('Maximum of 3 email addresses allowed');
+    }
+
+    const emailExists = this.emails.some(email => email.address === emailAddress);
+    if (emailExists) {
+        throw new Error('Email already exists');
+    }
+
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    
+    this.emails.push({
+        address: emailAddress,
+        isPrimary: false,
+        isVerified: false,
+        verificationToken: crypto
+            .createHash('sha256')
+            .update(verificationToken)
+            .digest('hex'),
+        verificationExpires: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+    });
+
+    await this.save();
+    return verificationToken;
+};
+
+userSchema.methods.setPrimaryEmail = async function(emailAddress) {
+    const email = this.emails.find(e => e.address === emailAddress);
+    if (!email) {
+        throw new Error('Email not found');
+    }
+    if (!email.isVerified) {
+        throw new Error('Email must be verified before setting as primary');
+    }
+
+    // Update primary status
+    this.emails.forEach(e => e.isPrimary = false);
+    email.isPrimary = true;
+    this.email = emailAddress; // Update main email field
+
+    await this.save();
+};
 
 const User = mongoose.model('User', userSchema);
 

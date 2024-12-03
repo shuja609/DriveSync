@@ -11,7 +11,7 @@ const compression = require('compression');
 // Import configurations
 const keys = require('./src/config/keys');
 const connectDB = require('./src/config/db');
-require('./src/config/cloudinary');
+
 
 // Import routes
 const routes = require('./src/routes');
@@ -119,6 +119,6 @@ initializeApp().then(() => {
     console.error('Application initialization failed:', error);
     process.exit(1);
 });
-
 // Export app for server
 module.exports = app;
+

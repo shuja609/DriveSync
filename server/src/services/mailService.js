@@ -22,10 +22,8 @@ class MailService {
             .update(verificationToken)
             .digest('hex');
         
-        console.log('Raw token:', verificationToken);
-        console.log('Hashed token for URL:', hashedToken);
-        
-        const verificationUrl = `${keys.app.apiUrl}/api/auth/verify-email/${verificationToken}`; // Use raw token
+        // Use the raw token in the URL
+        const verificationUrl = `${keys.app.frontendUrl}/verify-email?token=${verificationToken}`;
         
         const mailOptions = {
             from: keys.email.from,

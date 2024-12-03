@@ -3,18 +3,14 @@ const mailService = require('../services/mailService');
 const { validateRegistration } = require('../utils/validators');
 const { generateToken } = require('../config/auth');
 const crypto = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Your Google Client ID
 
 const authController = {
     // Register user
     async register(req, res) {
         try {
-            // Validate registration data
-            const { isValid, errors } = validateRegistration(req.body);
-            if (!isValid) {
-                return res.status(400).json({ success: false, errors });
-            }
-
-            const { email, password, name, phoneNumber } = req.body;
+            const { name, email, password } = req.body;
 
             // Check if user already exists
             const existingUser = await User.findOne({ email });
@@ -32,14 +28,11 @@ const authController = {
                     last: name.last
                 },
                 email,
-                password,
-                phoneNumber
+                password
             });
 
             // Generate email verification token
             const verificationToken = user.createEmailVerificationToken();
-            console.log('Generated Token:', verificationToken);
-            console.log('Stored Hashed Token:', user.emailVerificationToken);
 
             // Save user
             await user.save();
@@ -56,16 +49,17 @@ const authController = {
                 token,
                 user: {
                     id: user._id,
-                    name: user.fullName,
+                    name: `${user.name.first} ${user.name.last}`,
                     email: user.email,
-                    isVerified: user.isVerified
+                    
+                    role: user.role
                 }
             });
         } catch (error) {
             console.error('Registration error:', error);
             res.status(500).json({
                 success: false,
-                message: 'Error during registration'
+                message: error.message || 'Error during registration'
             });
         }
     },
@@ -114,10 +108,19 @@ const authController = {
                 token,
                 user: {
                     id: user._id,
-                    name: user.fullName,
+                    name: `${user.name.first} ${user.name.last}`,
                     email: user.email,
+                    phoneNumber: user.phoneNumber,
+                    profilePicture: user.profilePicture,
+                    gender: user.gender,
+                    dob: user.dob,
+                    address: user.address,
+                    bio: user.bio,
+                    preferences: user.preferences,
                     role: user.role,
-                    isVerified: user.isVerified
+                    isVerified: user.isVerified,
+                    isProfileComplete: user.isProfileComplete,
+                    lastLogin: user.lastLogin
                 }
             });
         } catch (error) {
@@ -133,43 +136,38 @@ const authController = {
     async verifyEmail(req, res) {
         try {
             const { token } = req.params;
-           // console.log('Verification attempt with token:', token);
+            console.log('Received token:', token);
 
             const hashedToken = crypto
                 .createHash('sha256')
                 .update(token)
                 .digest('hex');
-           // console.log('Computed hash:', hashedToken);
 
-            // Find user by verification token
             const user = await User.findOne({
                 emailVerificationToken: hashedToken,
                 emailVerificationExpires: { $gt: Date.now() }
             });
-            
+
             if (!user) {
-                // console.log('No user found with token hash:', hashedToken);
-                // // Let's also log all users to debug
-                // const allUsers = await User.find({}, 'email emailVerificationToken');
-                // console.log('All users tokens:', allUsers);
-                
                 return res.status(400).json({
                     success: false,
                     message: 'Invalid or expired verification token'
                 });
             }
 
-            // console.log('Found user:', {
-            //     email: user.email,
-            //     tokenMatch: user.emailVerificationToken === hashedToken,
-            //     isExpired: user.emailVerificationExpires < Date.now()
-            // });
-
             // Check if already verified
             if (user.isVerified) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Email is already verified'
+                return res.json({
+                    success: true,
+                    message: 'Email already verified',
+                    token: generateToken(user._id),
+                    user: {
+                        id: user._id,
+                        name: `${user.name.first} ${user.name.last}`,
+                        email: user.email,
+                        role: user.role,
+                        isVerified: true
+                    }
                 });
             }
 
@@ -182,12 +180,23 @@ const authController = {
             // Send welcome email
             await mailService.sendWelcomeEmail(user.email, user.fullName);
 
+            // Generate new token
+            const newToken = generateToken(user._id);
+
             res.json({
                 success: true,
-                message: 'Email verified successfully'
+                message: 'Email verified successfully',
+                token: newToken,
+                user: {
+                    id: user._id,
+                    name: `${user.name.first} ${user.name.last}`,
+                    email: user.email,
+                    role: user.role,
+                    isVerified: true
+                }
             });
         } catch (error) {
-            console.error('Email verification error:', error);
+            console.error('Verification error:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error during email verification'
@@ -265,6 +274,49 @@ const authController = {
                 success: false,
                 message: 'Error resetting password'
             });
+        }
+    },
+
+    // Google login
+    async loginWithGoogle(req, res) {
+        const { idToken } = req.body;
+        try {
+            const ticket = await client.verifyIdToken({
+                idToken,
+                audience: process.env.GOOGLE_CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
+            });
+            const payload = ticket.getPayload();
+            const email = payload.email;
+
+            // Check if user exists in your database, create if not
+            let user = await User.findOne({ email });
+            if (!user) {
+                user = new User({
+                    name: { first: payload.given_name, last: payload.family_name },
+                    email,
+                    // You can set a default password or handle it differently
+                    password: 'defaultPassword', // This should be hashed in a real scenario
+                    isVerified: true // Automatically verify users from Google
+                });
+                await user.save();
+            }
+
+            // Generate JWT token
+            const token = generateToken(user._id);
+            res.json({
+                success: true,
+                token,
+                user: {
+                    id: user._id,
+                    name: user.fullName,
+                    email: user.email,
+                    role: user.role,
+                    isVerified: user.isVerified
+                }
+            });
+        } catch (error) {
+            console.error('Google login error:', error);
+            res.status(400).json({ success: false, message: 'Google login failed' });
         }
     }
 };

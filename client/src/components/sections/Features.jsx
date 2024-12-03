@@ -99,7 +99,7 @@ const Features = () => {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="group relative bg-background-light/50 backdrop-blur-sm rounded-xl p-6 hover:bg-background-light transition-all duration-300"
+              className="group relative hover:cursor-pointer bg-background-light/50 backdrop-blur-sm rounded-xl p-6 hover:bg-background-light transition-all duration-300"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-primary-light/10 to-secondary-light/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
@@ -107,7 +107,7 @@ const Features = () => {
                 whileHover={{ scale: 1.05 }}
                 className="relative z-10"
               >
-                <div className="text-primary-light mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                <div className="text-primary-light mb-4 transform group-hover:scale-105 transition-transform duration-300">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-text-primary">

@@ -2,45 +2,30 @@ const express = require('express');
 const router = express.Router();
 const profileController = require('../controllers/profileController');
 const { protect } = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
 
-// All routes require authentication
+// Apply protect middleware to all routes
 router.use(protect);
 
-/**
- * Profile Setup Steps:
- * 1. Basic Info (Name, Phone, Gender, DOB)
- * 2. Profile Picture
- * 3. Address Details
- * 4. Car Preferences
- */
-
-// Get profile setup progress
+// Get setup progress
 router.get('/setup-progress', profileController.getSetupProgress);
 
-// Step 1: Basic Information
+// Setup steps
 router.post('/setup/basic-info', profileController.setupBasicInfo);
-
-// Step 2: Profile Picture
-router.post('/setup/profile-picture',
-    upload.single('profilePicture'),
-    profileController.setupProfilePicture
-);
-
-// Step 3: Address Details
+router.post('/setup/profile-picture', profileController.setupProfilePicture);
+router.post('/setup/personal-info', profileController.setupPersonalInfo);
 router.post('/setup/address', profileController.setupAddress);
-
-// Step 4: Car Preferences
 router.post('/setup/preferences', profileController.setupPreferences);
 
-// Mark profile setup as complete
+// Complete setup
 router.post('/setup/complete', profileController.completeSetup);
 
-// Regular profile routes
-router.get('/', profileController.getProfile);
-// router.put('/update', profileController.updateProfile);
-// router.put('/picture', upload.single('profilePicture'), profileController.updateProfilePicture);
-// router.delete('/picture', profileController.deleteProfilePicture);
-// router.put('/preferences', profileController.updatePreferences);
+// Skip step
+router.post('/setup/skip/:step', profileController.skipStep);
+
+// Add these routes
+router.post('/emails/add', profileController.addEmail);
+router.post('/emails/primary', profileController.setPrimaryEmail);
+router.delete('/emails/:email', profileController.removeEmail);
+router.get('/emails/verify/:token', profileController.verifyAdditionalEmail);
 
 module.exports = router; 

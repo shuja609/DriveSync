@@ -7,8 +7,8 @@ const keys = {
     app: {
         name: process.env.APP_NAME || 'DriveSync',
         env: process.env.NODE_ENV || 'development',
-        port: process.env.PORT || 3000,
-        apiUrl: process.env.API_URL || 'http://localhost:3000/api',
+        port: process.env.PORT ||   5000,
+        apiUrl: process.env.API_URL || 'http://localhost:5000/api',
         frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000'
     },
 
@@ -43,13 +43,7 @@ const keys = {
         service: process.env.EMAIL_SERVICE || 'gmail',
         user: process.env.EMAIL_USER,
         password: process.env.EMAIL_PASSWORD,
-        from: process.env.EMAIL_FROM || process.env.EMAIL_USER // Default to EMAIL_USER if FROM not specified
-    },
-
-    cloudinary: {
-        cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-        apiKey: process.env.CLOUDINARY_API_KEY,
-        apiSecret: process.env.CLOUDINARY_API_SECRET
+        from: process.env.EMAIL_FROM || process.env.EMAIL_USER
     },
 
     // Validate required environment variables
@@ -59,10 +53,7 @@ const keys = {
             'MONGODB_URI', 
             'EMAIL_USER',
             'EMAIL_PASSWORD',
-            'EMAIL_FROM',
-            'CLOUDINARY_CLOUD_NAME',
-            'CLOUDINARY_API_KEY', 
-            'CLOUDINARY_API_SECRET'
+            'EMAIL_FROM'
         ];
 
         const missing = required.filter(key => !process.env[key]);

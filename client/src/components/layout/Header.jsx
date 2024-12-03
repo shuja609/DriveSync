@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import Button from '../common/Button';
@@ -26,20 +26,12 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="outline"
-              onClick={() => navigate('/login')}
-              className="px-4 py-2"
-            >
-              Login
-            </Button>
-            <Button 
-              variant="primary"
-              onClick={() => navigate('/register')}
-              className="px-4 py-2"
-            >
-              Register
-            </Button>
+            <Link to="/login">
+              <Button variant="outline" className="px-4 py-2">Login</Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="primary" className="px-4 py-2">Register</Button>
+            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -58,20 +50,12 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden mt-4 space-y-2"
           >
-            <Button 
-              variant="outline"
-              onClick={() => navigate('/login')}
-              fullWidth
-            >
-              Login
-            </Button>
-            <Button 
-              variant="primary"
-              onClick={() => navigate('/register')}
-              fullWidth
-            >
-              Register
-            </Button>
+            <Link to="/login">
+              <Button variant="outline" fullWidth>Login</Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="primary" fullWidth>Register</Button>
+            </Link>
           </motion.div>
         )}
       </div>
