@@ -23,7 +23,14 @@ import NotificationSettings from './components/profile/NotificationSettings';
 import SavedCars from './components/profile/SavedCars';
 import ActivityHistory from './components/profile/ActivityHistory';
 import Support from './components/profile/Support';
+import AdminLayout from './components/admin/layout/AdminLayout';
+import Dashboard from './components/admin/dashboard/Dashboard';
+import UsersList from './components/admin/users/UsersList';
+import VehiclesList from './components/admin/vehicles/VehiclesList';
+import VehicleForm from './components/admin/vehicles/VehicleForm';
 import './App.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
     return (
@@ -91,8 +98,33 @@ const App = () => {
                 {/* Error routes */}
                 <Route path="/error" element={<ErrorPage />} />
                 <Route path="*" element={<NotFoundPage />} />
+
+                {/* Admin routes */}
+                <Route path="/admin" element={
+                    <PrivateRoute>
+                        <AdminLayout />
+                    </PrivateRoute>
+                }>
+                    <Route index element={<Dashboard />} />
+                    <Route path="users" element={<UsersList />} />
+                    <Route path="vehicles" element={<VehiclesList />} />
+                    <Route path="vehicles/new" element={<VehicleForm />} />
+                    <Route path="vehicles/:id/edit" element={<VehicleForm />} />
+                    {/* Other admin routes will go here */}
+                </Route>
             </Routes>
             <Footer />
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
     );
 };

@@ -231,8 +231,12 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin', 'moderator'],
+        enum: ['user', 'admin', 'sales'],
         default: 'user'
+    },
+    isProfileComplete: {
+        type: Boolean,
+        default: false
     },
     lastLogin: Date,
     passwordResetToken: String,

@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }) => {
             } catch (error) {
                 console.error('Auth check failed:', error);
                 authService.logout();
+                setError('Authentication check failed. Please try again.');
             } finally {
                 setLoading(false);
             }
@@ -71,6 +72,8 @@ export const AuthProvider = ({ children }) => {
                 } else {
                     navigate('/setup/step1');
                 }
+            } else {
+                setError('Invalid email or password. Please try again.');
             }
             return data;
         } catch (err) {

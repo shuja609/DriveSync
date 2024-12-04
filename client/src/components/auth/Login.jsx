@@ -17,6 +17,7 @@ const Login = () => {
         rememberDevice: false
     });
     const [loading, setLoading] = useState(false);
+    const [formError, setFormError] = useState(null); // Added to handle form-level error messages
 
     useEffect(() => {
         const rememberedDevice = deviceService.getRememberedDevice();
@@ -48,6 +49,7 @@ const Login = () => {
             );
         } catch (error) {
             console.error('Login failed:', error);
+            setFormError('Login failed. Please check your credentials and try again.'); // Set form-level error message
         } finally {
             setLoading(false);
         }
@@ -67,6 +69,11 @@ const Login = () => {
                 {error && (
                     <Alert severity="error" className="mb-4">
                         {error}
+                    </Alert>
+                )}
+                {formError && (
+                    <Alert severity="error" className="mb-4">
+                        {formError}
                     </Alert>
                 )}
 

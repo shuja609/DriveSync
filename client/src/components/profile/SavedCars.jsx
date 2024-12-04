@@ -111,7 +111,7 @@ const SavedCars = () => {
                                         </div>
                                         <div className="flex items-center text-text-primary/70">
                                             <AttachMoney className="w-5 h-5 mr-2" />
-                                            <span>${car.price.toLocaleString()}</span>
+                                            <span>{car.price ? `$${car.price.toLocaleString()}` : 'Price not available'}</span>
                                         </div>
                                     </div>
 
