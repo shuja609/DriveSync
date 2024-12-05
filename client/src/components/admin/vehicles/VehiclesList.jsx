@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { FiPlus, FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
 import vehicleService from '../../../services/vehicleService';
 import Spinner from '../../common/Spinner';
 import { toast } from 'react-toastify';
+import ConfirmationModal from '../../common/ConfirmationModal';
 
 const VehiclesList = () => {
     const [vehicles, setVehicles] = useState([]);
@@ -23,12 +24,25 @@ const VehiclesList = () => {
         page: 1,
         limit: 10
     });
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        vehicleId: null,
+        vehicleTitle: ''
+    });
+
+    // Debounced fetch function
+    const debouncedFetch = useCallback(
+        debounce((filters) => {
+            fetchVehicles(filters);
+        }, 500),
+        []
+    );
 
     // Fetch vehicles with current filters
-    const fetchVehicles = async () => {
+    const fetchVehicles = async (currentFilters = filters) => {
         try {
             setLoading(true);
-            const response = await vehicleService.getVehicles(filters);
+            const response = await vehicleService.getVehicles(currentFilters);
             setVehicles(response.vehicles);
             setPagination(response.pagination);
         } catch (error) {
@@ -42,31 +56,67 @@ const VehiclesList = () => {
     // Handle filter changes
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
-        setFilters(prev => ({
-            ...prev,
+        const newFilters = {
+            ...filters,
             [name]: value,
             page: 1 // Reset page when filters change
-        }));
-    };
+        };
+        setFilters(newFilters);
 
-    // Handle delete
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this vehicle?')) {
-            try {
-                await vehicleService.deleteVehicle(id);
-                toast.success('Vehicle deleted successfully');
-                fetchVehicles(); // Refresh list
-            } catch (error) {
-                toast.error('Failed to delete vehicle');
-                console.error('Error deleting vehicle:', error);
-            }
+        // Use debounced fetch for search, immediate fetch for other filters
+        if (name === 'search') {
+            debouncedFetch(newFilters);
+        } else {
+            fetchVehicles(newFilters);
         }
     };
 
-    // Effect to fetch vehicles when filters change
+    // Debounce helper function
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Effect to fetch vehicles on initial load
     useEffect(() => {
         fetchVehicles();
-    }, [filters]);
+    }, []); // Only run on mount
+
+    // Handle delete
+    const handleDelete = async () => {
+        try {
+            await vehicleService.deleteVehicle(deleteModal.vehicleId);
+            toast.success('Vehicle deleted successfully');
+            fetchVehicles(); // Refresh list
+            setDeleteModal({ isOpen: false, vehicleId: null, vehicleTitle: '' });
+        } catch (error) {
+            toast.error('Failed to delete vehicle');
+            console.error('Error deleting vehicle:', error);
+        }
+    };
+
+    const openDeleteModal = (vehicle) => {
+        setDeleteModal({
+            isOpen: true,
+            vehicleId: vehicle._id,
+            vehicleTitle: vehicle.title
+        });
+    };
+
+    const closeDeleteModal = () => {
+        setDeleteModal({
+            isOpen: false,
+            vehicleId: null,
+            vehicleTitle: ''
+        });
+    };
 
     if (loading) {
         return <Spinner />;
@@ -109,7 +159,14 @@ const VehiclesList = () => {
                     <option value="Toyota">Toyota</option>
                     <option value="Honda">Honda</option>
                     <option value="Ford">Ford</option>
-                    {/* Add more brands */}
+                    <option value="Chevrolet">Chevrolet</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Kia">Kia</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Mercedes-Benz">Mercedes-Benz</option>
+                    <option value="Audi">Audi</option>
+                    <option value="Volkswagen">Volkswagen</option>
                 </select>
 
                 <select
@@ -239,7 +296,7 @@ const VehiclesList = () => {
                                         <FiEdit2 className="inline-block" />
                                     </Link>
                                     <button
-                                        onClick={() => handleDelete(vehicle._id)}
+                                        onClick={() => openDeleteModal(vehicle)}
                                         className="text-red-600 hover:text-red-900"
                                     >
                                         <FiTrash2 className="inline-block" />
@@ -273,6 +330,14 @@ const VehiclesList = () => {
                     </button>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleDelete}
+                title="Delete Vehicle"
+                message={`Are you sure you want to delete "${deleteModal.vehicleTitle}"? This action cannot be undone.`}
+            />
         </div>
     );
 };

@@ -143,17 +143,17 @@ const SetupPreferences = () => {
                         Budget Range (USD)
                     </label>
                     <Slider
-                        value={[formData.budgetRange.min, formData.budgetRange.max]}
+                        value={[formData.budgetRange?.min || 0, formData.budgetRange?.max || 1000000]}
                         onChange={handleBudgetChange}
                         valueLabelDisplay="auto"
                         min={0}
                         max={1000000}
                         step={10000}
-                        valueLabelFormat={value => `$${value.toLocaleString()}`}
+                        valueLabelFormat={value => `$${(value || 0).toLocaleString()}`}
                     />
                     <div className="flex justify-between text-text-primary/70 text-sm">
-                        <span>${formData.budgetRange.min.toLocaleString()}</span>
-                        <span>${formData.budgetRange.max.toLocaleString()}</span>
+                        <span>${(formData.budgetRange?.min || 0).toLocaleString()}</span>
+                        <span>${(formData.budgetRange?.max || 1000000).toLocaleString()}</span>
                     </div>
                 </div>
 

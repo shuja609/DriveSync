@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiSave, FiUpload, FiX } from 'react-icons/fi';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useCloudinary } from '../../../hooks/useCloudinary';
 import vehicleService from '../../../services/vehicleService';
 import { toast } from 'react-toastify';
-import { useCloudinary } from '../../../hooks/useCloudinary';
+import Button from '../../common/Button';
+
+// Import form components
+import VehicleBasicInfo from './form/VehicleBasicInfo';
+import VehicleSpecifications from './form/VehicleSpecifications';
+import VehicleFeatures from './form/VehicleFeatures';
+import VehiclePricing from './form/VehiclePricing';
+import VehicleMedia from './form/VehicleMedia';
+import VehicleLocation from './form/VehicleLocation';
+import VehicleHistoryForm from './form/VehicleHistoryForm';
 
 const VehicleForm = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEditing = Boolean(id);
+    const { uploadToCloudinary } = useCloudinary();
 
     const [loading, setLoading] = useState(false);
+    const [uploadingImages, setUploadingImages] = useState(false);
+    const [images, setImages] = useState([]);
+    const [activeTab, setActiveTab] = useState('basic');
     const [vehicle, setVehicle] = useState({
         title: '',
         brand: '',
@@ -65,8 +77,19 @@ const VehicleForm = () => {
         pricing: {
             basePrice: 0,
             discountedPrice: 0,
-            leaseOptions: [],
-            financingOptions: []
+            discountExpiry: '',
+            leaseOptions: [{
+                duration: 36,
+                monthlyPayment: 0,
+                downPayment: 0,
+                mileageLimit: 12000
+            }],
+            financingOptions: [{
+                duration: 60,
+                apr: 3.99,
+                monthlyPayment: 0,
+                downPayment: 0
+            }]
         },
         category: [],
         tags: [],
@@ -76,18 +99,33 @@ const VehicleForm = () => {
             duration: '',
             coverage: ''
         },
+        location: {
+            address: {
+                street: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                country: '',
+                coordinates: {
+                    latitude: 0,
+                    longitude: 0
+                }
+            }
+        },
         availability: {
             status: 'In Stock',
             expectedDate: null
-        }
+        },
+        history: {
+            owners: 0,
+            accidents: 0,
+            serviceRecords: false,
+            carfaxReport: ''
+        },
+        media: []
     });
+    const [errors, setErrors] = useState({});
 
-    const [media, setMedia] = useState([]);
-    const [uploadingMedia, setUploadingMedia] = useState(false);
-
-    const { uploadToCloudinary, deleteFromCloudinary } = useCloudinary();
-
-    // Fetch vehicle data if editing
     useEffect(() => {
         if (isEditing) {
             fetchVehicle();
@@ -95,27 +133,299 @@ const VehicleForm = () => {
     }, [id]);
 
     const fetchVehicle = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
-            const response = await vehicleService.getVehicle(id);
-            setVehicle(response.vehicle);
-            setMedia(response.vehicle.media || []);
+            const data = await vehicleService.getVehicle(id);
+            const vehicleData = data.vehicle;
+            setVehicle(vehicleData);
+            
+            // Set images with proper structure
+            if (vehicleData.media && vehicleData.media.length > 0) {
+                setImages(vehicleData.media.map(m => ({
+                    url: m.url,
+                    isPrimary: m.isPrimary,
+                    type: m.type || 'image',
+                    order: m.order || 0
+                })));
+            }
         } catch (error) {
-            toast.error('Failed to load vehicle');
-            console.error('Error fetching vehicle:', error);
+            toast.error('Failed to fetch vehicle details');
+            console.error('Fetch vehicle error:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    // Handle form submission
+    const handleChange = (e) => {
+        const { name, value, type } = e.target;
+        const finalValue = type === 'number' ? Number(value) : value;
+        
+        setVehicle(prev => ({
+            ...prev,
+            [name]: finalValue
+        }));
+    };
+
+    const handleNestedChange = (e, path) => {
+        const { name, value, type } = e.target;
+        const finalValue = type === 'number' ? Number(value) : value;
+        const pathArray = path.split('.');
+        
+        setVehicle(prev => {
+            const newVehicle = { ...prev };
+            let current = newVehicle;
+            
+            // Navigate through the path
+            for (let i = 0; i < pathArray.length; i++) {
+                if (i === pathArray.length - 1) {
+                    // We're at the last path segment, update the value
+                    current[pathArray[i]] = {
+                        ...current[pathArray[i]],
+                        [name]: finalValue
+                    };
+                } else {
+                    // Create a new reference for nested objects
+                    current[pathArray[i]] = { ...current[pathArray[i]] };
+                    current = current[pathArray[i]];
+                }
+            }
+            
+            return newVehicle;
+        });
+    };
+
+    const handleMultiSelect = (e, field) => {
+        const values = Array.from(e.target.selectedOptions, option => option.value);
+        setVehicle(prev => ({
+            ...prev,
+            [field]: values
+        }));
+    };
+
+    const handleTagsChange = (e) => {
+        const value = e.target.value;
+        const tags = value.split(',').map(tag => tag.trim()).filter(Boolean);
+        setVehicle(prev => ({
+            ...prev,
+            tags: value.endsWith(',') ? [...tags, ''] : tags
+        }));
+    };
+
+    const handleImageUpload = async (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+
+        setUploadingImages(true);
+        try {
+            const uploadedImages = await Promise.all(
+                files.map(async (file) => {
+                    const result = await uploadToCloudinary(file);
+                    return {
+                        url: result.secure_url,
+                        isPrimary: false,
+                        type: 'image',
+                        order: images.length // Add order based on current length
+                    };
+                })
+            );
+
+            setImages(prev => {
+                const newImages = [...prev, ...uploadedImages];
+                // If this is the first image, make it primary
+                if (prev.length === 0 && uploadedImages.length > 0) {
+                    newImages[0].isPrimary = true;
+                }
+                return newImages;
+            });
+        } catch (error) {
+            toast.error('Failed to upload images');
+            console.error('Image upload error:', error);
+        } finally {
+            setUploadingImages(false);
+        }
+    };
+
+    const removeImage = (index) => {
+        setImages(prev => {
+            const newImages = prev.filter((_, i) => i !== index);
+            // If we removed the primary image and there are other images, make the first one primary
+            if (prev[index].isPrimary && newImages.length > 0) {
+                newImages[0].isPrimary = true;
+            }
+            // Update order after removal
+            return newImages.map((img, i) => ({
+                ...img,
+                order: i
+            }));
+        });
+    };
+
+    const handleSetPrimaryImage = (index) => {
+        setImages(prev => prev.map((img, i) => ({
+            ...img,
+            isPrimary: i === index
+        })));
+    };
+
+    const handleFinancingOptionChange = (index, field, value) => {
+        setVehicle(prev => ({
+            ...prev,
+            pricing: {
+                ...prev.pricing,
+                financingOptions: prev.pricing.financingOptions.map((option, i) =>
+                    i === index ? { ...option, [field]: parseFloat(value) || 0 } : option
+                )
+            }
+        }));
+    };
+
+    const handleLeaseOptionChange = (index, field, value) => {
+        setVehicle(prev => ({
+            ...prev,
+            pricing: {
+                ...prev.pricing,
+                leaseOptions: prev.pricing.leaseOptions.map((option, i) =>
+                    i === index ? { ...option, [field]: parseFloat(value) || 0 } : option
+                )
+            }
+        }));
+    };
+
+    const addFinancingOption = () => {
+        setVehicle(prev => ({
+            ...prev,
+            pricing: {
+                ...prev.pricing,
+                financingOptions: [
+                    ...prev.pricing.financingOptions,
+                    {
+                        duration: 60,
+                        apr: 3.99,
+                        monthlyPayment: 0,
+                        downPayment: 0
+                    }
+                ]
+            }
+        }));
+    };
+
+    const addLeaseOption = () => {
+        setVehicle(prev => ({
+            ...prev,
+            pricing: {
+                ...prev.pricing,
+                leaseOptions: [
+                    ...prev.pricing.leaseOptions,
+                    {
+                        duration: 36,
+                        monthlyPayment: 0,
+                        downPayment: 0,
+                        mileageLimit: 12000
+                    }
+                ]
+            }
+        }));
+    };
+
+    const removeFinancingOption = (index) => {
+        setVehicle(prev => ({
+            ...prev,
+            pricing: {
+                ...prev.pricing,
+                financingOptions: prev.pricing.financingOptions.filter((_, i) => i !== index)
+            }
+        }));
+    };
+
+    const removeLeaseOption = (index) => {
+        setVehicle(prev => ({
+            ...prev,
+            pricing: {
+                ...prev.pricing,
+                leaseOptions: prev.pricing.leaseOptions.filter((_, i) => i !== index)
+            }
+        }));
+    };
+
+    // Validation function
+    const validateForm = () => {
+        const newErrors = {};
+
+        // VIN validation helper
+        const isValidVin = (vin) => {
+            if (!vin || vin.length !== 17) return false;
+            return /^[A-HJ-NPR-Z0-9]{17}$/.test(vin);
+        };
+
+        // Stock number validation helper
+        const isValidStockNumber = (stockNumber) => {
+            if (!stockNumber) return false;
+            // Only allow letters and numbers, at least 1 character
+            return /^[A-Z0-9]+$/.test(stockNumber);
+        };
+
+        // Basic Info Validation
+        if (!vehicle.title || vehicle.title.length < 3) {
+            newErrors.title = 'Title must be at least 3 characters long';
+        }
+        if (!vehicle.brand || vehicle.brand.length < 2) {
+            newErrors.brand = 'Brand is required';
+        }
+        if (!vehicle.model) {
+            newErrors.model = 'Model is required';
+        }
+        if (!vehicle.year || vehicle.year < 1900 || vehicle.year > new Date().getFullYear() + 1) {
+            newErrors.year = 'Please enter a valid year';
+        }
+        if (!vehicle.condition) {
+            newErrors.condition = 'Condition is required';
+        }
+        if (vehicle.condition !== 'New' && (!vehicle.mileage || vehicle.mileage < 0)) {
+            newErrors.mileage = 'Please enter a valid mileage';
+        }
+        if (!isValidVin(vehicle.vin)) {
+            newErrors.vin = 'VIN must be exactly 17 characters and contain only valid characters (letters except I,O,Q and numbers)';
+        }
+        if (!isValidStockNumber(vehicle.stockNumber)) {
+            newErrors.stockNumber = 'Stock number must contain only letters and numbers';
+        }
+        if (!vehicle.description.short || vehicle.description.short.length < 10) {
+            newErrors['description.short'] = 'Short description must be at least 10 characters';
+        }
+        if (!vehicle.description.full || vehicle.description.full.length < 50) {
+            newErrors['description.full'] = 'Full description must be at least 50 characters';
+        }
+        if (!vehicle.category || vehicle.category.length === 0) {
+            newErrors.category = 'Please select at least one category';
+        }
+
+        // Add more validations for other tabs as needed...
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!validateForm()) {
+            toast.error('Please fix the validation errors before submitting');
+            return;
+        }
+
+        setLoading(true);
+
         try {
-            setLoading(true);
             const vehicleData = {
                 ...vehicle,
-                media // Include the media array in the submission
+                vin: vehicle.vin.toUpperCase(),
+                stockNumber: vehicle.stockNumber.toUpperCase(),
+                media: images.map(img => ({
+                    type: 'image',
+                    url: img.url,
+                    isPrimary: img.isPrimary,
+                    order: img.order || 0
+                }))
             };
 
             if (isEditing) {
@@ -125,374 +435,156 @@ const VehicleForm = () => {
                 await vehicleService.createVehicle(vehicleData);
                 toast.success('Vehicle created successfully');
             }
+
             navigate('/admin/vehicles');
         } catch (error) {
-            toast.error(isEditing ? 'Failed to update vehicle' : 'Failed to create vehicle');
-            console.error('Error saving vehicle:', error);
+            let errorMessage = error.response?.data?.message || error.message || 'Failed to save vehicle';
+            
+            // Handle duplicate key errors
+            if (error.response?.data?.code === 11000 || error.response?.status === 409) {
+                const field = Object.keys(error.response?.data?.keyPattern || {})[0];
+                const value = error.response?.data?.keyValue?.[field];
+                
+                if (field === 'stockNumber') {
+                    errorMessage = `Stock number "${value}" is already in use. Please choose a different one.`;
+                    setErrors(prev => ({
+                        ...prev,
+                        stockNumber: errorMessage
+                    }));
+                } else if (field === 'vin') {
+                    errorMessage = `VIN "${value}" is already registered. Please check the number and try again.`;
+                    setErrors(prev => ({
+                        ...prev,
+                        vin: errorMessage
+                    }));
+                }
+            } else if (error.response?.data?.errors) {
+                // Handle validation errors from server
+                const serverErrors = {};
+                error.response.data.errors.forEach(err => {
+                    serverErrors[err.field] = err.message;
+                });
+                setErrors(serverErrors);
+            }
+            
+            toast.error(errorMessage);
+            console.error('Save vehicle error:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    // Handle input changes
-    const handleChange = (e, section = null) => {
-        const { name, value } = e.target;
-        if (section) {
-            setVehicle(prev => ({
-                ...prev,
-                [section]: {
-                    ...prev[section],
-                    [name]: value
-                }
-            }));
-        } else {
-            setVehicle(prev => ({
-                ...prev,
-                [name]: value
-            }));
-        }
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
     };
 
-    // Handle media upload
-    const handleMediaUpload = async (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length === 0) return;
-
-        try {
-            setUploadingMedia(true);
-            
-            const uploadPromises = files.map(async (file) => {
-                const result = await uploadToCloudinary(file, 'vehicles');
-                return {
-                    type: file.type.startsWith('image/') ? 'image' : 'video',
-                    url: result.secure_url,
-                    publicId: result.public_id,
-                    order: media.length + 1
-                };
-            });
-
-            const uploadedMedia = await Promise.all(uploadPromises);
-            
-            // If editing, save to backend
-            if (isEditing) {
-                const response = await vehicleService.updateVehicle(id, {
-                    ...vehicle,
-                    media: [...media, ...uploadedMedia]
-                });
-                setVehicle(response.vehicle);
-                setMedia(response.vehicle.media);
-            } else {
-                // If creating new, just update local state
-                setMedia(prev => [...prev, ...uploadedMedia]);
-            }
-            
-            toast.success('Media uploaded successfully');
-        } catch (error) {
-            toast.error('Failed to upload media');
-            console.error('Error uploading media:', error);
-        } finally {
-            setUploadingMedia(false);
-        }
-    };
-
-    // Handle media reorder
-    const handleMediaReorder = async (result) => {
-        if (!result.destination) return;
-
-        const items = Array.from(media);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-
-        setMedia(items);
-
-        try {
-            await vehicleService.updateMediaOrder(id, items.map(item => item._id));
-        } catch (error) {
-            toast.error('Failed to update media order');
-            console.error('Error updating media order:', error);
-        }
-    };
-
-    // Handle media delete
-    const handleMediaDelete = async (mediaItem) => {
-        try {
-            // Delete from Cloudinary
-            await deleteFromCloudinary(mediaItem.publicId);
-
-            // If editing, update backend
-            if (isEditing) {
-                const updatedMedia = media.filter(item => item._id !== mediaItem._id);
-                const response = await vehicleService.updateVehicle(id, {
-                    ...vehicle,
-                    media: updatedMedia
-                });
-                setVehicle(response.vehicle);
-                setMedia(response.vehicle.media);
-            } else {
-                // If creating new, just update local state
-                setMedia(prev => prev.filter(item => item.publicId !== mediaItem.publicId));
-            }
-
-            toast.success('Media deleted successfully');
-        } catch (error) {
-            toast.error('Failed to delete media');
-            console.error('Error deleting media:', error);
-        }
-    };
+    const renderTabButton = (tab, label) => (
+        <button
+            type="button"
+            onClick={() => handleTabChange(tab)}
+            className={`px-4 py-2 rounded-t-lg ${
+                activeTab === tab
+                    ? 'bg-primary-light text-white'
+                    : 'bg-background-light text-text-primary hover:bg-primary-light/10'
+            }`}
+        >
+            {label}
+        </button>
+    );
 
     if (loading) {
         return <div>Loading...</div>;
     }
 
     return (
-        <form onSubmit={handleSubmit} className="p-6 max-w-4xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold">
-                    {isEditing ? 'Edit Vehicle' : 'Add New Vehicle'}
-                </h1>
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
-                >
-                    <FiSave /> {loading ? 'Saving...' : 'Save Vehicle'}
-                </button>
-            </div>
-
-            {/* Basic Information */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Title</label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={vehicle.title}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Brand</label>
-                        <input
-                            type="text"
-                            name="brand"
-                            value={vehicle.brand}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Model</label>
-                        <input
-                            type="text"
-                            name="model"
-                            value={vehicle.model}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Year</label>
-                        <input
-                            type="number"
-                            name="year"
-                            value={vehicle.year}
-                            onChange={handleChange}
-                            required
-                            min="1900"
-                            max={new Date().getFullYear() + 1}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">VIN</label>
-                        <input
-                            type="text"
-                            name="vin"
-                            value={vehicle.vin}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Stock Number</label>
-                        <input
-                            type="text"
-                            name="stockNumber"
-                            value={vehicle.stockNumber}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="flex space-x-4 border-b border-background-light">
+                    {renderTabButton('basic', 'Basic Information')}
+                    {renderTabButton('specs', 'Specifications')}
+                    {renderTabButton('features', 'Features')}
+                    {renderTabButton('pricing', 'Pricing')}
+                    {renderTabButton('media', 'Media')}
+                    {renderTabButton('location', 'Location')}
+                    {renderTabButton('history', 'History')}
                 </div>
-            </div>
 
-            {/* Media Upload */}
-            {isEditing && (
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
-                    <h2 className="text-lg font-semibold mb-4">Media</h2>
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Upload Images/Videos
-                        </label>
-                        <input
-                            type="file"
-                            multiple
-                            accept="image/*,video/*"
-                            onChange={handleMediaUpload}
-                            disabled={uploadingMedia}
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                <div className="mt-6">
+                    {activeTab === 'basic' && (
+                        <VehicleBasicInfo
+                            vehicle={vehicle}
+                            handleChange={handleChange}
+                            handleNestedChange={handleNestedChange}
+                            handleMultiSelect={handleMultiSelect}
+                            handleTagsChange={handleTagsChange}
+                            errors={errors}
                         />
-                    </div>
-
-                    <DragDropContext onDragEnd={handleMediaReorder}>
-                        <Droppable droppableId="media" direction="horizontal">
-                            {(provided) => (
-                                <div
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
-                                    className="flex flex-wrap gap-4"
-                                >
-                                    {media.map((item, index) => (
-                                        <Draggable
-                                            key={item._id}
-                                            draggableId={item._id}
-                                            index={index}
-                                        >
-                                            {(provided) => (
-                                                <div
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                    className="relative group"
-                                                >
-                                                    <img
-                                                        src={item.url}
-                                                        alt=""
-                                                        className="w-32 h-32 object-cover rounded-lg"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleMediaDelete(item)}
-                                                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    >
-                                                        <FiX />
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </Draggable>
-                                    ))}
-                                    {provided.placeholder}
-                                </div>
-                            )}
-                        </Droppable>
-                    </DragDropContext>
-                </div>
-            )}
-
-            {/* Description */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-lg font-semibold mb-4">Description</h2>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Short Description</label>
-                        <input
-                            type="text"
-                            name="short"
-                            value={vehicle.description.short}
-                            onChange={(e) => handleChange(e, 'description')}
-                            maxLength={200}
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    )}
+                    {activeTab === 'specs' && (
+                        <VehicleSpecifications
+                            vehicle={vehicle}
+                            handleNestedChange={handleNestedChange}
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Full Description</label>
-                        <textarea
-                            name="full"
-                            value={vehicle.description.full}
-                            onChange={(e) => handleChange(e, 'description')}
-                            required
-                            rows={4}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    )}
+                    {activeTab === 'features' && (
+                        <VehicleFeatures
+                            vehicle={vehicle}
+                            setVehicle={setVehicle}
                         />
-                    </div>
-                </div>
-            </div>
-
-            {/* Pricing */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-lg font-semibold mb-4">Pricing</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Base Price</label>
-                        <input
-                            type="number"
-                            name="basePrice"
-                            value={vehicle.pricing.basePrice}
-                            onChange={(e) => handleChange(e, 'pricing')}
-                            required
-                            min="0"
-                            step="0.01"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    )}
+                    {activeTab === 'pricing' && (
+                        <VehiclePricing
+                            vehicle={vehicle}
+                            handleNestedChange={handleNestedChange}
+                            handleFinancingOptionChange={handleFinancingOptionChange}
+                            handleLeaseOptionChange={handleLeaseOptionChange}
+                            addFinancingOption={addFinancingOption}
+                            removeFinancingOption={removeFinancingOption}
+                            addLeaseOption={addLeaseOption}
+                            removeLeaseOption={removeLeaseOption}
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Discounted Price</label>
-                        <input
-                            type="number"
-                            name="discountedPrice"
-                            value={vehicle.pricing.discountedPrice}
-                            onChange={(e) => handleChange(e, 'pricing')}
-                            min="0"
-                            step="0.01"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    )}
+                    {activeTab === 'media' && (
+                        <VehicleMedia
+                            images={images}
+                            uploadingImages={uploadingImages}
+                            handleImageUpload={handleImageUpload}
+                            handleSetPrimaryImage={handleSetPrimaryImage}
+                            removeImage={removeImage}
                         />
-                    </div>
-                </div>
-            </div>
-
-            {/* Availability */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-lg font-semibold mb-4">Availability</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Status</label>
-                        <select
-                            name="status"
-                            value={vehicle.availability.status}
-                            onChange={(e) => handleChange(e, 'availability')}
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        >
-                            <option value="In Stock">In Stock</option>
-                            <option value="In Transit">In Transit</option>
-                            <option value="Sold">Sold</option>
-                            <option value="Reserved">Reserved</option>
-                        </select>
-                    </div>
-                    {vehicle.availability.status === 'In Transit' && (
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Expected Date</label>
-                            <input
-                                type="date"
-                                name="expectedDate"
-                                value={vehicle.availability.expectedDate || ''}
-                                onChange={(e) => handleChange(e, 'availability')}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            />
-                        </div>
+                    )}
+                    {activeTab === 'location' && (
+                        <VehicleLocation
+                            vehicle={vehicle}
+                            handleNestedChange={handleNestedChange}
+                        />
+                    )}
+                    {activeTab === 'history' && (
+                        <VehicleHistoryForm
+                            vehicle={vehicle}
+                            handleNestedChange={handleNestedChange}
+                        />
                     )}
                 </div>
-            </div>
-        </form>
+
+                <div className="flex justify-end space-x-4">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => navigate('/admin/vehicles')}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        disabled={loading}
+                    >
+                        {loading ? 'Saving...' : isEditing ? 'Update Vehicle' : 'Create Vehicle'}
+                    </Button>
+                </div>
+            </form>
+        </div>
     );
 };
 

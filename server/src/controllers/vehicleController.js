@@ -6,6 +6,11 @@ const vehicleController = {
         try {
             const vehicleData = req.body;
             
+            // Convert checkbox "on" value to boolean
+            if (vehicleData.history && vehicleData.history.serviceRecords === 'on') {
+                vehicleData.history.serviceRecords = true;
+            }
+            
             // Add metadata
             vehicleData.metadata = {
                 createdBy: req.user.id
@@ -13,6 +18,21 @@ const vehicleController = {
 
             // Create vehicle
             const vehicle = new Vehicle(vehicleData);
+            
+            // Validate the vehicle data
+            const validationError = vehicle.validateSync();
+            if (validationError) {
+                console.error('Validation error:', validationError);
+                return res.status(400).json({
+                    success: false,
+                    message: 'Validation error',
+                    errors: Object.values(validationError.errors).map(err => ({
+                        field: err.path,
+                        message: err.message
+                    }))
+                });
+            }
+
             await vehicle.save();
 
             res.status(201).json({
@@ -22,6 +42,16 @@ const vehicleController = {
             });
         } catch (error) {
             console.error('Create vehicle error:', error);
+            if (error.name === 'ValidationError') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Validation error',
+                    errors: Object.values(error.errors).map(err => ({
+                        field: err.path,
+                        message: err.message
+                    }))
+                });
+            }
             res.status(500).json({
                 success: false,
                 message: 'Error creating vehicle',

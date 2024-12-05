@@ -12,9 +12,16 @@ const vehicleApi = axios.create({
 
 // Add auth token to requests
 vehicleApi.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    const userData = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (userData) {
+        try {
+            const { token } = JSON.parse(userData);
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+        }
     }
     return config;
 });
