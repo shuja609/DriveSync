@@ -86,7 +86,7 @@ app.set('trust proxy', 1); // Trust first proxy
 /**
  * Routes
  */
-app.use('/', routes);
+app.use('/api', routes);
 
 /**
  * Error Handling

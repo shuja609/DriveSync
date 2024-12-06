@@ -28,6 +28,7 @@ import Dashboard from './components/admin/dashboard/Dashboard';
 import UsersList from './components/admin/users/UsersList';
 import VehiclesList from './components/admin/vehicles/VehiclesList';
 import VehicleForm from './components/admin/vehicles/VehicleForm';
+import AnalyticsDashboard from './components/admin/analytics/AnalyticsDashboard';
 import OrdersList from './components/admin/sales/OrdersList';
 import TransactionsList from './components/admin/sales/TransactionsList';
 import OrderDetails from './components/admin/sales/OrderDetails';
@@ -114,6 +115,7 @@ const App = () => {
                     <Route path="vehicles" element={<VehiclesList />} />
                     <Route path="vehicles/new" element={<VehicleForm />} />
                     <Route path="vehicles/:id/edit" element={<VehicleForm />} />
+                    <Route path="analytics" element={<AnalyticsDashboard />} />
                     
                     {/* Sales routes */}
                     <Route path="sales">
