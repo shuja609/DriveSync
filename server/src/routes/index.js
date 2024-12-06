@@ -10,7 +10,7 @@ const orderRoutes = require('./orderRoute');
 const transactionRoutes = require('./transactionRoute');
 const analyticsRoutes = require('./analyticsRoute');
 const contentRoutes = require('./contentRoutes');
-
+const feedbackRoutes = require('./feedbackRoute');
 
 // Define API routes
 router.use('/auth', authRoutes);
@@ -21,6 +21,6 @@ router.use('/orders', orderRoutes);
 router.use('/transactions', transactionRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/content', contentRoutes);
-
+router.use('/feedback', feedbackRoutes);
 
 module.exports = router;

@@ -8,7 +8,8 @@ import {
     FiBarChart2,
     FiVideo,
     FiSettings,
-    FiDollarSign
+    FiDollarSign,
+    FiMessageSquare
 } from 'react-icons/fi';
 
 const menuItems = [
@@ -26,6 +27,7 @@ const menuItems = [
     },
     { icon: <FiBarChart2 />, label: 'Analytics', path: '/admin/analytics' },
     { icon: <FiVideo />, label: 'Content', path: '/admin/content' },
+    { icon: <FiMessageSquare />, label: 'Feedback', path: '/admin/feedback' },
     { icon: <FiSettings />, label: 'Settings', path: '/admin/settings' }
 ];
 

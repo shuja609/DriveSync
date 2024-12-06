@@ -39,6 +39,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ContentManagement from './components/admin/content/ContentManagement';
 import AdminSettings from './components/admin/settings/AdminSettings';
 import { SnackbarProvider, useSnackbar } from 'notistack';
+import FeedbackManagement from './components/admin/feedback/FeedbackManagement';
 
 const App = () => {
     const [errors, setErrors] = useState({});
@@ -131,6 +132,7 @@ const App = () => {
                         <Route path="transactions/:id" element={<TransactionDetails />} />
                     </Route>
                     <Route path="content" element={<ContentManagement />} />
+                    <Route path="feedback" element={<FeedbackManagement />} />
                     <Route path="settings" element={<AdminSettings />} />
                 </Route>
             </Routes>
