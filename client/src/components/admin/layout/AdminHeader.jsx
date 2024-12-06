@@ -3,38 +3,59 @@ import { useAuth } from '../../../context/AuthContext';
 import { 
     NotificationsNone, 
     Settings, 
-    ExitToApp 
+    ExitToApp,
+    Search as SearchIcon
 } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
 
 const AdminHeader = () => {
     const { user, logout } = useAuth();
 
     return (
-        <header className="bg-background-light shadow-md">
+        <header className="w-full">
             <div className="px-4 py-3 flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-primary-light">
-                    DriveSync Admin
-                </h1>
-
+                {/* Left Section - Title and Search */}
                 <div className="flex items-center space-x-4">
-                    <button className="p-2 hover:bg-background-dark rounded-full">
-                        <NotificationsNone className="text-text-primary" />
-                    </button>
-                    <button className="p-2 hover:bg-background-dark rounded-full">
-                        <Settings className="text-text-primary" />
-                    </button>
+                    <h1 className="text-xl sm:text-2xl font-bold text-primary-light hidden sm:block">
+                        DriveSync Admin
+                    </h1>
+                    <h1 className="text-xl font-bold text-primary-light sm:hidden">
+                        DriveSync
+                    </h1>
+                </div>
+
+                {/* Right Section - Actions and Profile */}
+                <div className="flex items-center space-x-2 sm:space-x-4">
                     
-                    <div className="flex items-center space-x-3">
-                        <div>
-                            <p className="text-sm text-text-primary">{user?.name}</p>
-                            <p className="text-xs text-text-primary/70">Admin</p>
+
+                    {/* Notifications */}
+                    <Tooltip title="Notifications">
+                        <IconButton className="p-1 sm:p-2 hover:bg-background-dark rounded-full">
+                            <NotificationsNone className="text-white/70 text-xl sm:text-2xl" />
+                        </IconButton>
+                    </Tooltip>
+
+                    {/* Settings - Hidden on mobile */}
+                    <Tooltip title="Settings">
+                        <IconButton className="hidden sm:block p-1 sm:p-2 hover:bg-background-dark rounded-full">
+                            <Settings className="text-white/70 text-xl sm:text-2xl" />
+                        </IconButton>
+                    </Tooltip>
+
+                    {/* Profile and Logout */}
+                    <div className="flex items-center space-x-2 sm:space-x-3 pl-2 sm:pl-4 border-l border-background-dark">
+                        <div className="hidden sm:block">
+                            <p className="text-sm text-text-primary">{user?.name || 'Admin User'}</p>
+                            <p className="text-xs text-primary/70">Admin</p>
                         </div>
-                        <button 
-                            onClick={logout}
-                            className="p-2 hover:bg-background-dark rounded-full"
-                        >
-                            <ExitToApp className="text-text-primary" />
-                        </button>
+                        <Tooltip title="Logout">
+                            <IconButton 
+                                onClick={logout}
+                                className="p-1 sm:p-2 hover:bg-background-dark rounded-full"
+                            >
+                                <ExitToApp className="text-primary-light text-xl sm:text-2xl" />
+                            </IconButton>
+                        </Tooltip>
                     </div>
                 </div>
             </div>
@@ -42,4 +63,4 @@ const AdminHeader = () => {
     );
 };
 
-export default AdminHeader; 
+export default AdminHeader;

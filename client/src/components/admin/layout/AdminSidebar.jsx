@@ -9,8 +9,10 @@ import {
     FiVideo,
     FiSettings,
     FiDollarSign,
-    FiMessageSquare
+    FiMessageSquare,
+    FiX
 } from 'react-icons/fi';
+import { IconButton } from '@mui/material';
 
 const menuItems = [
     { icon: <FiHome />, label: 'Dashboard', path: '/admin' },
@@ -31,12 +33,25 @@ const menuItems = [
     { icon: <FiSettings />, label: 'Settings', path: '/admin/settings' }
 ];
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ onClose }) => {
     return (
-        <aside className="w-64 bg-background-light min-h-screen p-4">
-            <nav className="space-y-2">
+        <aside className="w-64 bg-background-light min-h-screen flex flex-col shadow-lg">
+            {/* Mobile Close Button */}
+            <div className="lg:hidden p-4 flex justify-end">
+                <IconButton onClick={onClose} size="small" className="text-text-primary">
+                    <FiX />
+                </IconButton>
+            </div>
+
+            {/* Logo */}
+            <div className="p-4 border-b border-background-dark">
+                <h1 className="text-2xl font-bold text-primary-light">DriveSync</h1>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 overflow-y-auto p-4 space-y-2">
                 {menuItems.map((item) => (
-                    <div key={item.path}>
+                    <div key={item.path} className="relative">
                         <NavLink
                             to={item.path}
                             className={({ isActive }) => `
@@ -47,9 +62,10 @@ const AdminSidebar = () => {
                                     : 'text-text-primary hover:bg-background-dark'
                                 }
                             `}
+                            onClick={item.subItems ? undefined : onClose}
                         >
-                            {item.icon}
-                            <span>{item.label}</span>
+                            <span className="text-xl">{item.icon}</span>
+                            <span className="font-medium">{item.label}</span>
                         </NavLink>
                         {item.subItems && (
                             <div className="ml-8 mt-1 space-y-1">
@@ -65,6 +81,7 @@ const AdminSidebar = () => {
                                                 : 'text-text-primary hover:bg-background-dark'
                                             }
                                         `}
+                                        onClick={onClose}
                                     >
                                         {subItem.label}
                                     </NavLink>
@@ -74,6 +91,19 @@ const AdminSidebar = () => {
                     </div>
                 ))}
             </nav>
+
+            {/* User Info */}
+            <div className="p-4 border-t border-background-dark">
+                <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-primary-light/20 flex items-center justify-center">
+                        <FiUsers className="text-primary-light" />
+                    </div>
+                    <div>
+                        <p className="font-medium text-text-primary">Admin User</p>
+                        <p className="text-sm text-text-secondary">admin@drivesync.com</p>
+                    </div>
+                </div>
+            </div>
         </aside>
     );
 };
