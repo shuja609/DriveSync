@@ -28,6 +28,10 @@ import Dashboard from './components/admin/dashboard/Dashboard';
 import UsersList from './components/admin/users/UsersList';
 import VehiclesList from './components/admin/vehicles/VehiclesList';
 import VehicleForm from './components/admin/vehicles/VehicleForm';
+import OrdersList from './components/admin/sales/OrdersList';
+import TransactionsList from './components/admin/sales/TransactionsList';
+import OrderDetails from './components/admin/sales/OrderDetails';
+import TransactionDetails from './components/admin/sales/TransactionDetails';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -110,7 +114,14 @@ const App = () => {
                     <Route path="vehicles" element={<VehiclesList />} />
                     <Route path="vehicles/new" element={<VehicleForm />} />
                     <Route path="vehicles/:id/edit" element={<VehicleForm />} />
-                    {/* Other admin routes will go here */}
+                    
+                    {/* Sales routes */}
+                    <Route path="sales">
+                        <Route path="orders" element={<OrdersList />} />
+                        <Route path="orders/:id" element={<OrderDetails />} />
+                        <Route path="transactions" element={<TransactionsList />} />
+                        <Route path="transactions/:id" element={<TransactionDetails />} />
+                    </Route>
                 </Route>
             </Routes>
             <Footer />

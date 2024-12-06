@@ -8,6 +8,10 @@ const authRoutes = require('./authRoute');
 const profileRoutes = require('./profileRoute');
 const adminRoutes = require('./adminRoute');
 const vehicleRoutes = require('./vehicleRoute');
+const orderRoutes = require('./orderRoute');
+const transactionRoutes = require('./transactionRoute');
+
+
 // Import other route files as needed
 // const productRoutes = require('./productRoute');
 // const paymentRoutes = require('./paymentRoute');
@@ -19,6 +23,8 @@ router.use('/api/auth', authRoutes);
 router.use('/api/profile', profileRoutes);
 router.use('/api/admin', adminRoutes);
 router.use('/api/vehicles', vehicleRoutes);
+router.use('/api/orders', orderRoutes);
+router.use('/api/transactions', transactionRoutes);
 // Add other routes as needed
 // router.use('/api/products', productRoutes);
 // router.use('/api/payments', paymentRoutes);
