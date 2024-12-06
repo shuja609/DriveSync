@@ -9,6 +9,8 @@ const vehicleRoutes = require('./vehicleRoute');
 const orderRoutes = require('./orderRoute');
 const transactionRoutes = require('./transactionRoute');
 const analyticsRoutes = require('./analyticsRoute');
+const contentRoutes = require('./contentRoutes');
+
 
 // Define API routes
 router.use('/auth', authRoutes);
@@ -18,5 +20,7 @@ router.use('/vehicles', vehicleRoutes);
 router.use('/orders', orderRoutes);
 router.use('/transactions', transactionRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/content', contentRoutes);
+
 
 module.exports = router;

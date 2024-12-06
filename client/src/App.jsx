@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import Footer from './components/layout/Footer';
@@ -36,10 +36,16 @@ import TransactionDetails from './components/admin/sales/TransactionDetails';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ContentManagement from './components/admin/content/ContentManagement';
+import AdminSettings from './components/admin/settings/AdminSettings';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 const App = () => {
+    const [errors, setErrors] = useState({});
+    const { enqueueSnackbar } = useSnackbar();
+
     return (
-        <>
+        <SnackbarProvider maxSnack={3}>
             <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<HomePage />} />
@@ -124,6 +130,8 @@ const App = () => {
                         <Route path="transactions" element={<TransactionsList />} />
                         <Route path="transactions/:id" element={<TransactionDetails />} />
                     </Route>
+                    <Route path="content" element={<ContentManagement />} />
+                    <Route path="settings" element={<AdminSettings />} />
                 </Route>
             </Routes>
             <Footer />
@@ -138,7 +146,7 @@ const App = () => {
                 draggable
                 pauseOnHover
             />
-        </>
+        </SnackbarProvider>
     );
 };
 
