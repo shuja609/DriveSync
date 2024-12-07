@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
+import Header from '../header/Header';
+import PublicHeader from '../layout/Header';
+import Footer from '../layout/Footer';
 import {
     Search as SearchIcon,
     Sort as SortIcon,
@@ -8,9 +12,12 @@ import {
     Speed,
     LocalGasStation,
     Settings,
-    Close as CloseIcon
+    Close as CloseIcon,
+    NavigateNext as NextIcon,
+    NavigateBefore as PrevIcon
 } from '@mui/icons-material';
 import vehicleService from '../../services/vehicleService';
+import { useNavigate } from 'react-router-dom';
 
 const initialFilters = {
     search: '',
@@ -29,13 +36,19 @@ const sortOptions = [
     { label: 'Year: Oldest First', value: 'year_asc' },
 ];
 
+const ITEMS_PER_PAGE = 8;
+
 const ShowroomPage = () => {
+    const { isAuthenticated } = useAuth();
     const [vehicles, setVehicles] = useState([]);
     const [filters, setFilters] = useState(initialFilters);
     const [sortBy, setSortBy] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const navigate = useNavigate();
 
     // Fetch vehicles from API
     useEffect(() => {
@@ -50,14 +63,19 @@ const ShowroomPage = () => {
                     year: filters.year,
                     minPrice: filters.priceRange[0],
                     maxPrice: filters.priceRange[1],
-                    sort: sortBy
+                    sort: sortBy,
+                    page: currentPage,
+                    limit: ITEMS_PER_PAGE
                 };
                 const response = await vehicleService.getVehicles(params);
-                // Ensure we're working with an array
-                const vehiclesArray = Array.isArray(response) ? response : 
-                                    Array.isArray(response.data) ? response.data : 
-                                    Array.isArray(response.vehicles) ? response.vehicles : [];
-                setVehicles(vehiclesArray);
+                
+                if (response.success) {
+                    setVehicles(response.vehicles || []);
+                    setTotalPages(response.pagination?.pages || 1);
+                } else {
+                    setVehicles([]);
+                    setTotalPages(1);
+                }
             } catch (err) {
                 setError('Failed to fetch vehicles. Please try again later.');
                 console.error('Error fetching vehicles:', err);
@@ -67,7 +85,7 @@ const ShowroomPage = () => {
         };
 
         fetchVehicles();
-    }, [filters, sortBy]);
+    }, [filters, sortBy, currentPage]);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -75,49 +93,69 @@ const ShowroomPage = () => {
             ...prev,
             [name]: value
         }));
+        setCurrentPage(1); // Reset to first page when filters change
     };
 
     const handleSortChange = (e) => {
         setSortBy(e.target.value);
+        setCurrentPage(1); // Reset to first page when sort changes
     };
 
     const resetFilters = () => {
         setFilters(initialFilters);
         setSortBy('');
+        setCurrentPage(1);
+    };
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background-dark flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-primary-light border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-text-primary">Loading vehicles...</p>
+            <div className="min-h-screen bg-background-dark">
+                {isAuthenticated ? <Header /> : <PublicHeader />}
+                <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+                    <div className="text-center">
+                        <div className="w-16 h-16 border-4 border-primary-light border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-text-primary">Loading vehicles...</p>
+                    </div>
                 </div>
+                <Footer />
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen bg-background-dark flex items-center justify-center">
-                <div className="text-center text-text-primary">
-                    <h2 className="text-2xl font-bold mb-4">Oops!</h2>
-                    <p>{error}</p>
-                    <button 
-                        onClick={() => window.location.reload()} 
-                        className="mt-4 px-6 py-2 bg-primary-light text-white rounded-lg hover:bg-primary-dark transition-colors"
-                    >
-                        Try Again
-                    </button>
+            <div className="min-h-screen bg-background-dark">
+                {isAuthenticated ? <Header /> : <PublicHeader />}
+                <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+                    <div className="text-center text-text-primary">
+                        <h2 className="text-2xl font-bold mb-4">Oops!</h2>
+                        <p>{error}</p>
+                        <button 
+                            onClick={() => window.location.reload()} 
+                            className="mt-4 px-6 py-2 bg-primary-light text-white rounded-lg hover:bg-primary-dark transition-colors"
+                        >
+                            Try Again
+                        </button>
+                    </div>
                 </div>
+                <Footer />
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-background-dark">
+            {isAuthenticated ? <Header /> : <PublicHeader />}
+            
             {/* Header Section */}
-            <div className="bg-background-default py-12">
+            <div className="bg-background-default py-12 pt-24">
                 <div className="container mx-auto px-4">
                     <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary-light to-secondary-light text-transparent bg-clip-text text-center">
                         Our Vehicle Collection
@@ -241,8 +279,8 @@ const ShowroomPage = () => {
                     </motion.div>
                 )}
 
-                {/* Vehicle Grid - Update to handle empty state */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {/* Vehicle Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                     {vehicles.length === 0 ? (
                         <div className="col-span-full text-center py-12">
                             <DirectionsCar className="w-16 h-16 text-text-primary/30 mx-auto mb-4" />
@@ -257,18 +295,19 @@ const ShowroomPage = () => {
                                 layout
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="bg-background-light rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
+                                className="bg-background-light rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                                onClick={() => navigate(`/vehicles/${vehicle._id}`)}
                             >
                                 {/* Vehicle Image */}
                                 <div className="relative aspect-[16/9]">
                                     <img
-                                        src={vehicle.media?.[0]?.url || '/images/placeholder-car.jpg'}
+                                        src={vehicle.media.find(media => media.isPrimary)?.url || `https://ui-avatars.com/api/?name=${vehicle.brand}+${vehicle.model}&background=5d9adf&color=000000`}
                                         alt={vehicle.title}
                                         className="w-full h-full object-cover"
                                     />
                                     <div className="absolute top-4 right-4">
                                         <span className="px-3 py-1 bg-primary-light rounded-full text-white text-sm">
-                                            {vehicle.category}
+                                            {vehicle.category.join(' ')}
                                         </span>
                                     </div>
                                 </div>
@@ -306,7 +345,13 @@ const ShowroomPage = () => {
                                         <div className="text-2xl font-bold text-primary-light">
                                             ${vehicle.pricing?.basePrice?.toLocaleString() || 'N/A'}
                                         </div>
-                                        <button className="px-4 py-2 bg-primary-light text-white rounded-lg hover:bg-primary-dark transition-colors">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/vehicles/${vehicle._id}`);
+                                            }}
+                                            className="px-4 py-2 bg-primary-light text-white rounded-lg hover:bg-primary-dark transition-colors"
+                                        >
                                             View Details
                                         </button>
                                     </div>
@@ -315,7 +360,54 @@ const ShowroomPage = () => {
                         ))
                     )}
                 </div>
+
+                {/* Pagination */}
+                {vehicles.length > 0 && (
+                    <div className="flex justify-center items-center gap-4 mt-8">
+                        <button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className={`p-2 rounded-full ${
+                                currentPage === 1
+                                    ? 'bg-background-light/50 text-text-primary/30'
+                                    : 'bg-background-light text-text-primary hover:bg-primary-light hover:text-white'
+                            } transition-colors`}
+                        >
+                            <PrevIcon />
+                        </button>
+                        
+                        <div className="flex items-center gap-2">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    className={`w-8 h-8 rounded-full ${
+                                        currentPage === page
+                                            ? 'bg-primary-light text-white'
+                                            : 'bg-background-light text-text-primary hover:bg-primary-light/20'
+                                    } transition-colors`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className={`p-2 rounded-full ${
+                                currentPage === totalPages
+                                    ? 'bg-background-light/50 text-text-primary/30'
+                                    : 'bg-background-light text-text-primary hover:bg-primary-light hover:text-white'
+                            } transition-colors`}
+                        >
+                            <NextIcon />
+                        </button>
+                    </div>
+                )}
             </div>
+            
+            <Footer />
         </div>
     );
 };

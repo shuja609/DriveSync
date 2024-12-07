@@ -19,7 +19,7 @@ const Header = () => {
                         </span>
                     </Link>
 
-                    {/* Navigation */}
+                    {/* Navigation
                     <nav className="hidden md:flex space-x-8">
                         <Link to="/" className="text-text-primary hover:text-primary-light">
                             Home
@@ -33,7 +33,7 @@ const Header = () => {
                         <Link to="/contact" className="text-text-primary hover:text-primary-light">
                             Contact
                         </Link>
-                    </nav>
+                    </nav> */}
 
                     {/* Auth Section */}
                     <div className="flex items-center space-x-4">

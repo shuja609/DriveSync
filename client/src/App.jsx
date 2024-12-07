@@ -10,6 +10,7 @@ import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
 import VerifyEmail from './components/auth/VerifyEmail';
 import ShowroomPage from './components/pages/ShowroomPage';
+import VehicleDetailPage from './components/pages/VehicleDetailPage';
 import { ProfileSetupProvider } from './context/ProfileSetupContext';
 import SetupBasicInfo from './components/profile/setup/SetupBasicInfo';
 import SetupProfilePicture from './components/profile/setup/SetupProfilePicture';
@@ -57,6 +58,7 @@ const App = () => {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
 
                 {/* Protected routes */}
                 <Route path="/setup/*" element={

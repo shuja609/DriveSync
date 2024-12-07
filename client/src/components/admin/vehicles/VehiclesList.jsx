@@ -251,7 +251,7 @@ const VehiclesList = () => {
                                         <div className="h-10 w-10 flex-shrink-0">
                                             <img
                                                 className="h-10 w-10 rounded-full object-cover"
-                                                src={vehicle.media[0]?.url || '/placeholder-car.png'}
+                                                src={vehicle.media.find(media => media.isPrimary)?.url || `https://ui-avatars.com/api/?name=${vehicle.brand}+${vehicle.model}&background=0D8ABC&color=fff`}
                                                 alt={vehicle.title}
                                             />
                                         </div>

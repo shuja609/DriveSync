@@ -67,7 +67,9 @@ export const AuthProvider = ({ children }) => {
                 setUser(data.user);
                 
                 // Redirect based on profile completion
-                if (data.user.isProfileComplete) {
+                if(data.user.role === 'admin') {
+                    navigate('/admin');
+                } else if (data.user.isProfileComplete) {
                     navigate('/');
                 } else {
                     navigate('/setup/step1');
@@ -107,7 +109,11 @@ export const AuthProvider = ({ children }) => {
             setError(null);
             const data = await authService.googleLogin(tokenId);
             setUser(data.user);
-            navigate('/');
+            if(data.user.role === 'admin') {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
             return data;
         } catch (err) {
             setError(err.response?.data?.message || 'An error occurred during Google login');
@@ -120,7 +126,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         authService.logout();
         setUser(null);
-        navigate('/login');
+        navigate('/');
     };
 
     const forgotPassword = async (email) => {
