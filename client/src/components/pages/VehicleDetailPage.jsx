@@ -30,19 +30,23 @@ import {
     EmojiEvents,
     Visibility
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import vehicleService from '../../services/vehicleService';
+import userService from '../../services/userService';
+import { toast } from 'react-toastify';
+import ReviewSection from '../reviews/ReviewSection';
 
 const VehicleDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
     const [vehicle, setVehicle] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeImage, setActiveImage] = useState(0);
     const [showGallery, setShowGallery] = useState(false);
-    const [isFavorite, setIsFavorite] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
+    const [savingInProgress, setSavingInProgress] = useState(false);
 
     useEffect(() => {
         const fetchVehicle = async () => {
@@ -68,6 +72,64 @@ const VehicleDetailPage = () => {
 
         fetchVehicle();
     }, [id]);
+
+    useEffect(() => {
+        const checkIfSaved = async () => {
+            if (isAuthenticated && vehicle) {
+                try {
+                    const { savedCars } = await userService.getSavedCars();
+                    setIsSaved(savedCars.some(car => car.carId._id === id));
+                } catch (error) {
+                    console.error('Error checking saved status:', error);
+                }
+            }
+        };
+
+        checkIfSaved();
+    }, [isAuthenticated, vehicle, id]);
+
+    const handleSaveToggle = async () => {
+        if (!isAuthenticated) {
+            toast.info('Please log in to save vehicles', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true
+            });
+            // You might want to redirect to login page or show login modal
+            return;
+        }
+
+        if (savingInProgress) return;
+
+        setSavingInProgress(true);
+        try {
+            if (isSaved) {
+                await userService.removeSavedCar(id);
+                toast.success('Vehicle removed from saved cars', {
+                    position: 'top-right',
+                    autoClose: 2000
+                });
+                setIsSaved(false);
+            } else {
+                await userService.saveCar(id);
+                toast.success('Vehicle saved successfully', {
+                    position: 'top-right',
+                    autoClose: 2000
+                });
+                setIsSaved(true);
+            }
+        } catch (error) {
+            toast.error(error.message || 'Error saving vehicle', {
+                position: 'top-right',
+                autoClose: 3000
+            });
+        } finally {
+            setSavingInProgress(false);
+        }
+    };
 
     const renderWarrantyBadge = (type) => {
         const colors = {
@@ -167,24 +229,61 @@ const VehicleDetailPage = () => {
                             animate={{ opacity: 1 }}
                         >
                             <img
-                                src={vehicle.media[activeImage].url}
-                                alt={vehicle.title}
+                                src={vehicle?.media?.[activeImage]?.url || `https://ui-avatars.com/api/?name=${vehicle.brand}+${vehicle.model}&background=5d9adf&color=000000`}
+                                alt={vehicle?.title || 'Vehicle Image'}
                                 className="w-full h-full object-cover"
                             />
-                            <motion.div className="absolute top-4 right-4 flex space-x-2">
-                                <button 
+                            <motion.div 
+                                className="absolute top-4 right-4 flex space-x-2"
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                <motion.button 
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        setIsFavorite(!isFavorite);
+                                        handleSaveToggle();
                                     }}
-                                    className="p-2 bg-background-dark/50 rounded-full hover:bg-background-dark transition-colors"
+                                    className={`p-2 rounded-full transition-all duration-300 ${
+                                        savingInProgress 
+                                            ? 'bg-gray-400 cursor-not-allowed' 
+                                            : 'bg-background-dark/50 hover:bg-background-dark hover:scale-110'
+                                    }`}
+                                    disabled={savingInProgress}
+                                    whileHover={!savingInProgress ? { scale: 1.1 } : {}}
+                                    whileTap={!savingInProgress ? { scale: 0.9 } : {}}
                                 >
-                                    {isFavorite ? (
-                                        <Favorite className="text-primary-light" />
-                                    ) : (
-                                        <FavoriteBorder className="text-white" />
-                                    )}
-                                </button>
+                                    <AnimatePresence mode="wait">
+                                        {savingInProgress ? (
+                                            <motion.div
+                                                key="loading"
+                                                initial={{ opacity: 0, rotate: 0 }}
+                                                animate={{ opacity: 1, rotate: 360 }}
+                                                exit={{ opacity: 0 }}
+                                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                                            />
+                                        ) : isSaved ? (
+                                            <motion.div
+                                                key="saved"
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                exit={{ scale: 0 }}
+                                            >
+                                                <Favorite className="text-primary-light text-2xl" />
+                                            </motion.div>
+                                        ) : (
+                                            <motion.div
+                                                key="unsaved"
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                exit={{ scale: 0 }}
+                                            >
+                                                <FavoriteBorder className="text-white text-2xl" />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.button>
                                 <button 
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -199,7 +298,7 @@ const VehicleDetailPage = () => {
 
                         {/* Thumbnail Navigation */}
                         <div className="flex space-x-2 overflow-x-auto pb-2">
-                            {vehicle.media.map((media, index) => (
+                            {vehicle?.media?.map((media, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setActiveImage(index)}
@@ -208,8 +307,8 @@ const VehicleDetailPage = () => {
                                     }`}
                                 >
                                     <img
-                                        src={media.url}
-                                        alt={`${vehicle.title} - View ${index + 1}`}
+                                        src={media?.url || `https://ui-avatars.com/api/?name=${vehicle.brand}+${vehicle.model}&background=5d9adf&color=000000`}
+                                        alt={`${vehicle?.title || 'Vehicle'} - View ${index + 1}`}
                                         className="w-full h-full object-cover"
                                     />
                                 </button>
@@ -224,25 +323,25 @@ const VehicleDetailPage = () => {
                         transition={{ duration: 0.5 }}
                     >
                         <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-                            {vehicle.title}
+                            {vehicle?.title || 'Loading...'}
                         </h1>
                         
                         <div className="mb-6">
                             <p className="text-text-primary/70 text-lg mb-2">
-                                {vehicle.description.short}
+                                {vehicle?.description?.short || 'Description not available'}
                             </p>
                             <div className="flex items-center space-x-4 text-text-primary/60">
                                 <span className="flex items-center">
                                     <CalendarToday className="w-4 h-4 mr-1" />
-                                    {vehicle.year}
+                                    {vehicle?.year || 'N/A'}
                                 </span>
                                 <span className="flex items-center">
                                     <DirectionsCar className="w-4 h-4 mr-1" />
-                                    {vehicle.condition}
+                                    {vehicle?.condition || 'N/A'}
                                 </span>
                                 <span className="flex items-center">
                                     <LocationOn className="w-4 h-4 mr-1" />
-                                    {vehicle.location.address.city}, {vehicle.location.address.state}
+                                    {vehicle?.location?.address?.city || 'N/A'}, {vehicle?.location?.address?.state || 'N/A'}
                                 </span>
                             </div>
                         </div>
@@ -711,6 +810,9 @@ const VehicleDetailPage = () => {
                         </div>
                     </div>
                 </section>
+
+                {/* Reviews Section */}
+                <ReviewSection vehicleId={id} />
             </div>
 
             <Footer />

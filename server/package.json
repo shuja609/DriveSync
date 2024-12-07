@@ -7,7 +7,8 @@
     "dev": "nodemon ./bin/www",
     "add-test-feedback": "node src/scripts/addTestFeedback.js",
     "add-test-vehicles": "node src/scripts/addTestVehicles.js",
-    "add-test-users": "node src/scripts/addTestUsers.js"
+    "add-test-users": "node src/scripts/addTestUsers.js",
+    "add-test-reviews": "node src/scripts/addTestReviews.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

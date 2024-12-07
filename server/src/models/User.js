@@ -82,7 +82,7 @@ const activitySchema = new mongoose.Schema({
 const savedCarSchema = new mongoose.Schema({
     carId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Car',
+        ref: 'Vehicle',
         required: true
     },
     savedAt: {

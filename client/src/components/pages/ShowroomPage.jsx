@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import Header from '../header/Header';
@@ -37,11 +37,13 @@ const sortOptions = [
 ];
 
 const ITEMS_PER_PAGE = 8;
+const SEARCH_DELAY = 500; // Delay in milliseconds for debouncing
 
 const ShowroomPage = () => {
     const { isAuthenticated } = useAuth();
     const [vehicles, setVehicles] = useState([]);
     const [filters, setFilters] = useState(initialFilters);
+    const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -49,6 +51,27 @@ const ShowroomPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+
+    // Debounced search function
+    const debouncedSearch = useCallback(
+        (value) => {
+            setFilters(prev => ({
+                ...prev,
+                search: value
+            }));
+            setCurrentPage(1);
+        },
+        []
+    );
+
+    // Handle search input changes
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            debouncedSearch(searchTerm);
+        }, SEARCH_DELAY);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm, debouncedSearch]);
 
     // Fetch vehicles from API
     useEffect(() => {
@@ -89,20 +112,25 @@ const ShowroomPage = () => {
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
-        setFilters(prev => ({
-            ...prev,
-            [name]: value
-        }));
-        setCurrentPage(1); // Reset to first page when filters change
+        if (name === 'search') {
+            setSearchTerm(value);
+        } else {
+            setFilters(prev => ({
+                ...prev,
+                [name]: value
+            }));
+            setCurrentPage(1);
+        }
     };
 
     const handleSortChange = (e) => {
         setSortBy(e.target.value);
-        setCurrentPage(1); // Reset to first page when sort changes
+        setCurrentPage(1);
     };
 
     const resetFilters = () => {
         setFilters(initialFilters);
+        setSearchTerm('');
         setSortBy('');
         setCurrentPage(1);
     };
@@ -178,7 +206,7 @@ const ShowroomPage = () => {
                                 type="text"
                                 name="search"
                                 placeholder="Search vehicles..."
-                                value={filters.search}
+                                value={searchTerm}
                                 onChange={handleFilterChange}
                                 className="w-full pl-10 pr-4 py-2 bg-background-light rounded-lg text-text-primary placeholder-text-primary/50 focus:outline-none focus:ring-2 focus:ring-primary-light"
                             />
