@@ -35,6 +35,8 @@ import vehicleService from '../../services/vehicleService';
 import userService from '../../services/userService';
 import { toast } from 'react-toastify';
 import ReviewSection from '../reviews/ReviewSection';
+import BookingForm from '../booking/BookingForm';
+import InquiryForm from '../inquiry/InquiryForm';
 
 const VehicleDetailPage = () => {
     const { id } = useParams();
@@ -47,6 +49,8 @@ const VehicleDetailPage = () => {
     const [showGallery, setShowGallery] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [savingInProgress, setSavingInProgress] = useState(false);
+    const [showBookingForm, setShowBookingForm] = useState(false);
+    const [showInquiryForm, setShowInquiryForm] = useState(false);
 
     useEffect(() => {
         const fetchVehicle = async () => {
@@ -219,6 +223,28 @@ const VehicleDetailPage = () => {
             <div className="container mx-auto px-4 py-8">
                 {/* Top Section - Images and Key Details */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+                    {showBookingForm && (
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                            <div className="bg-background-light rounded-lg max-w-xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                                <BookingForm 
+                                    vehicleId={id} 
+                                    onClose={() => setShowBookingForm(false)} 
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {showInquiryForm && (
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                            <div className="bg-background-light rounded-lg max-w-xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                                <InquiryForm 
+                                    vehicleId={id} 
+                                    onClose={() => setShowInquiryForm(false)} 
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {/* Left Column - Image Gallery */}
                     <div>
                         {/* Main Image */}
@@ -392,11 +418,17 @@ const VehicleDetailPage = () => {
 
                             {/* CTA Buttons */}
                             <div className="space-y-3">
-                                <button className="w-full py-3 bg-primary-light text-white rounded-lg hover:bg-primary-dark transition-colors">
-                                    Reserve Now
+                                <button 
+                                    onClick={() => setShowBookingForm(true)}
+                                    className="w-full py-3 bg-primary-light text-white rounded-lg hover:bg-primary-dark transition-colors"
+                                >
+                                    Book Now
                                 </button>
-                                <button className="w-full py-3 border-2 border-primary-light text-primary-light rounded-lg hover:bg-primary-light hover:text-white transition-colors">
-                                    Schedule Test Drive
+                                <button 
+                                    onClick={() => setShowInquiryForm(true)}
+                                    className="w-full py-3 border-2 border-primary-light text-primary-light rounded-lg hover:bg-primary-light hover:text-white transition-colors"
+                                >
+                                    Ask a Question
                                 </button>
                             </div>
                         </div>

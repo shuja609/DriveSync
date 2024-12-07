@@ -8,7 +8,8 @@
     "add-test-feedback": "node src/scripts/addTestFeedback.js",
     "add-test-vehicles": "node src/scripts/addTestVehicles.js",
     "add-test-users": "node src/scripts/addTestUsers.js",
-    "add-test-reviews": "node src/scripts/addTestReviews.js"
+    "add-test-reviews": "node src/scripts/addTestReviews.js",
+    "add-test-data": "node src/scripts/addTestData.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

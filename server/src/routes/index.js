@@ -13,6 +13,8 @@ const contentRoutes = require('./contentRoutes');
 const feedbackRoutes = require('./feedbackRoute');
 const userRoutes = require('./userRoute');
 const reviewRoutes = require('./reviewRoute');
+const bookingRoutes = require('./bookingRoute');
+const inquiryRoutes = require('./inquiryRoute');
 
 // Define API routes
 router.use('/auth', authRoutes);
@@ -26,5 +28,7 @@ router.use('/content', contentRoutes);
 router.use('/feedback', feedbackRoutes);
 router.use('/users', userRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/bookings', bookingRoutes);
+router.use('/inquiries', inquiryRoutes);
 
 module.exports = router;
