@@ -50,10 +50,10 @@ exports.getAllVideos = async (req, res) => {
 
         const total = await Video.countDocuments(query);
          // Increment views
-        videos.forEach(video => {
-            video.views += 1;
-            video.save();   
-        });
+        // videos.forEach(video => {
+        //     video.views += 1;
+        //     video.save();   
+        // });
 
         res.json({
             videos,
