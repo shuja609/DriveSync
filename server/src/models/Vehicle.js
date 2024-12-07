@@ -14,7 +14,7 @@ const specificationSchema = new mongoose.Schema({
         torque: String, // e.g., "195 lb-ft @ 1500-4500 rpm"
         transmission: {
             type: String,
-            enum: ['Manual', 'Automatic', 'CVT', 'DCT', 'Single-Speed']
+            enum: ['Manual', 'Automatic', 'CVT', 'DCT', 'Single-Speed', '8-Speed Dual-Clutch', '10-Speed Dual-Clutch', '10-Speed Automatic', '8-Speed Automatic']
         },
         drivetrain: {
             type: String,

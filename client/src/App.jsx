@@ -9,6 +9,7 @@ import Register from './components/auth/Register';
 import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
 import VerifyEmail from './components/auth/VerifyEmail';
+import ShowroomPage from './components/pages/ShowroomPage';
 import { ProfileSetupProvider } from './context/ProfileSetupContext';
 import SetupBasicInfo from './components/profile/setup/SetupBasicInfo';
 import SetupProfilePicture from './components/profile/setup/SetupProfilePicture';
@@ -50,6 +51,7 @@ const App = () => {
             <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<HomePage />} />
+                <Route path="/showroom" element={<ShowroomPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
