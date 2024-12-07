@@ -10,7 +10,8 @@
     "add-test-users": "node src/scripts/addTestUsers.js",
     "add-test-reviews": "node src/scripts/addTestReviews.js",
     "add-test-data": "node src/scripts/addTestData.js",
-    "add-test-videos": "node src/scripts/addTestVideos.js"
+    "add-test-videos": "node src/scripts/addTestVideos.js",
+    "add-test-orders": "node src/scripts/addTestOrders.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

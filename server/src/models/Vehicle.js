@@ -57,7 +57,8 @@ const mediaSchema = new mongoose.Schema({
     },
     url: {
         type: String,
-        required: true
+        required: true,
+        default: ''
     },
     isPrimary: {
         type: Boolean,

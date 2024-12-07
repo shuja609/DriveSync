@@ -1,23 +1,25 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-    Person, 
-    Settings, 
-    Email, 
-    Notifications, 
-    Favorite,
-    History,
-    Help
-} from '@mui/icons-material';
+    FiUser,
+    FiSettings,
+    FiMail,
+    FiBell,
+    FiHeart,
+    FiClock,
+    FiHelpCircle,
+    FiShoppingBag
+} from 'react-icons/fi';
 
 const menuItems = [
-    { icon: <Person />, label: 'Profile Overview', path: '/profile' },
-    { icon: <Settings />, label: 'Account Settings', path: '/profile/settings' },
-    { icon: <Email />, label: 'Email Settings', path: '/profile/emails' },
-    { icon: <Notifications />, label: 'Notifications', path: '/profile/notifications' },
-    { icon: <Favorite />, label: 'Saved Cars', path: '/profile/saved' },
-    { icon: <History />, label: 'My Activity', path: '/profile/activity' },
-    { icon: <Help />, label: 'Help & Support', path: '/profile/support' }
+    { icon: <FiUser className="w-5 h-5" />, label: 'Profile Overview', path: '/profile' },
+    { icon: <FiSettings className="w-5 h-5" />, label: 'Account Settings', path: '/profile/settings' },
+    { icon: <FiMail className="w-5 h-5" />, label: 'Email Settings', path: '/profile/emails' },
+    { icon: <FiBell className="w-5 h-5" />, label: 'Notifications', path: '/profile/notifications' },
+    { icon: <FiShoppingBag className="w-5 h-5" />, label: 'My Orders', path: '/orders' },
+    { icon: <FiHeart className="w-5 h-5" />, label: 'Saved Cars', path: '/profile/saved' },
+    { icon: <FiClock className="w-5 h-5" />, label: 'My Activity', path: '/profile/activity' },
+    { icon: <FiHelpCircle className="w-5 h-5" />, label: 'Help & Support', path: '/profile/support' }
 ];
 
 const ProfileLayout = ({ children, title }) => {

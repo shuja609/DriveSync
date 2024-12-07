@@ -1,21 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { protect, adminOnly } = require('../middleware/authMiddleware');
 const transactionController = require('../controllers/transactionController');
+const { protect, adminOnly } = require('../middleware/authMiddleware');
 
-// Get all transactions (admin only)
-router.get('/', protect, adminOnly, transactionController.getAllTransactions);
+// Public routes
+// None
 
-// Get user's transactions
-router.get('/my-transactions', protect, transactionController.getMyTransactions);
-
-// Get single transaction
+// Protected routes (logged in users)
+router.post('/', protect, transactionController.createTransaction);
+router.get('/my-transactions', protect, transactionController.getUserTransactions);
 router.get('/:id', protect, transactionController.getTransactionById);
 
-// Process payment
-router.post('/process-payment', protect, transactionController.processPayment);
-
-// Process refund (admin only)
-router.post('/process-refund', protect, adminOnly, transactionController.processRefund);
+// Admin routes
+router.get('/', protect, adminOnly, transactionController.getAllTransactions);
 
 module.exports = router; 

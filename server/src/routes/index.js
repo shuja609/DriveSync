@@ -6,8 +6,6 @@ const authRoutes = require('./authRoute');
 const profileRoutes = require('./profileRoute');
 const adminRoutes = require('./adminRoute');
 const vehicleRoutes = require('./vehicleRoute');
-const orderRoutes = require('./orderRoute');
-const transactionRoutes = require('./transactionRoute');
 const analyticsRoutes = require('./analyticsRoute');
 const contentRoutes = require('./contentRoutes');
 const feedbackRoutes = require('./feedbackRoute');
@@ -15,14 +13,15 @@ const userRoutes = require('./userRoute');
 const reviewRoutes = require('./reviewRoute');
 const bookingRoutes = require('./bookingRoute');
 const inquiryRoutes = require('./inquiryRoute');
+const orderRoutes = require('./orderRoute');
+const transactionRoutes = require('./transactionRoute');
+const paymentRoutes = require('./paymentRoute');
 
 // Define API routes
 router.use('/auth', authRoutes);
 router.use('/profile', profileRoutes);
 router.use('/admin', adminRoutes);
 router.use('/vehicles', vehicleRoutes);
-router.use('/orders', orderRoutes);
-router.use('/transactions', transactionRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/content', contentRoutes);
 router.use('/feedback', feedbackRoutes);
@@ -30,5 +29,7 @@ router.use('/users', userRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/bookings', bookingRoutes);
 router.use('/inquiries', inquiryRoutes);
-
+router.use('/orders', orderRoutes);
+router.use('/transactions', transactionRoutes);
+router.use('/payments', paymentRoutes);
 module.exports = router;

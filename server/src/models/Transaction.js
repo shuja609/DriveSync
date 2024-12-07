@@ -1,85 +1,113 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
-    order: {
+    orderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order',
         required: true
     },
-    customer: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    amount: {
-        type: Number,
-        required: true
+    transactionNumber: {
+        type: String,
+        unique: true
     },
     type: {
         type: String,
         enum: ['payment', 'refund'],
         required: true
     },
+    amount: {
+        type: Number,
+        required: true
+    },
+    currency: {
+        type: String,
+        default: 'USD'
+    },
+    method: {
+        type: String,
+        enum: ['bank_transfer', 'cash', 'financing'],
+        required: true
+    },
     status: {
         type: String,
-        enum: ['pending', 'successful', 'failed'],
+        enum: ['pending', 'processing', 'completed', 'failed'],
         default: 'pending'
     },
-    paymentMethod: {
-        type: String,
-        enum: ['credit_card', 'debit_card', 'bank_transfer'],
-        required: function() {
-            return this.type === 'payment';
+    paymentDetails: {
+        bankTransfer: {
+            bankName: String,
+            accountNumber: String,
+            referenceNumber: String
+        },
+        cash: {
+            receiptNumber: String,
+            collectedBy: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        },
+        financing: {
+            loanNumber: String,
+            lender: String,
+            termLength: Number,
+            interestRate: Number
         }
     },
-    cardDetails: {
-        lastFourDigits: String,
-        expiryMonth: String,
-        expiryYear: String,
-        cardholderName: String
+    metadata: {
+        ipAddress: String,
+        userAgent: String,
+        location: String
     },
-    refundReason: {
-        type: String,
-        required: function() {
-            return this.type === 'refund';
+    notes: [{
+        content: String,
+        addedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        timestamp: {
+            type: Date,
+            default: Date.now
         }
-    },
-    originalTransaction: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Transaction',
-        required: function() {
-            return this.type === 'refund';
-        }
-    }
+    }]
 }, {
     timestamps: true
 });
 
-// Mask card number before saving
-transactionSchema.pre('save', function(next) {
-    if (this.cardDetails && this.cardDetails.cardNumber) {
-        this.cardDetails.lastFourDigits = this.cardDetails.cardNumber.slice(-4);
-        delete this.cardDetails.cardNumber;
+// Generate unique transaction number before saving
+transactionSchema.pre('save', async function(next) {
+    if (this.isNew && !this.transactionNumber) {
+        const date = new Date();
+        const year = date.getFullYear().toString().slice(-2);
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const count = await this.constructor.countDocuments() + 1;
+        this.transactionNumber = `TXN-${year}${month}-${count.toString().padStart(4, '0')}`;
     }
     next();
 });
 
-// Update order status when transaction is completed
+// Update order payment status when transaction is completed
 transactionSchema.post('save', async function(doc) {
-    if (doc.status === 'successful') {
+    if (doc.status === 'completed') {
         const Order = mongoose.model('Order');
-        const order = await Order.findById(doc.order);
-        
-        if (doc.type === 'payment') {
-            order.paymentStatus = 'paid';
-            order.status = 'completed';
-        } else if (doc.type === 'refund') {
-            order.paymentStatus = 'refunded';
-            order.status = 'refunded';
-        }
-        
-        await order.save();
+        await Order.findByIdAndUpdate(doc.orderId, {
+            'paymentDetails.status': 'completed',
+            'paymentDetails.transactionId': doc.transactionNumber
+        });
     }
 });
 
-module.exports = mongoose.model('Transaction', transactionSchema); 
+// Indexes for faster queries
+transactionSchema.index({ orderId: 1 });
+transactionSchema.index({ userId: 1 });
+transactionSchema.index({ transactionNumber: 1 }, { unique: true });
+transactionSchema.index({ status: 1 });
+transactionSchema.index({ createdAt: -1 });
+
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+module.exports = Transaction; 

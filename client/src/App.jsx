@@ -35,6 +35,8 @@ import OrdersList from './components/admin/sales/OrdersList';
 import TransactionsList from './components/admin/sales/TransactionsList';
 import OrderDetails from './components/admin/sales/OrderDetails';
 import TransactionDetails from './components/admin/sales/TransactionDetails';
+import MyOrders from './components/order/MyOrders';
+import UserOrderDetails from './components/order/OrderDetails';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -108,6 +110,18 @@ const App = () => {
                 <Route path="/profile/support" element={
                     <PrivateRoute>
                         <Support />
+                    </PrivateRoute>
+                } />
+
+                {/* Order Management Routes - Protected */}
+                <Route path="/orders" element={
+                    <PrivateRoute>
+                        <MyOrders />
+                    </PrivateRoute>
+                } />
+                <Route path="/orders/:id" element={
+                    <PrivateRoute>
+                        <UserOrderDetails />
                     </PrivateRoute>
                 } />
 

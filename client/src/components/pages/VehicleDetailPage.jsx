@@ -37,6 +37,7 @@ import { toast } from 'react-toastify';
 import ReviewSection from '../reviews/ReviewSection';
 import BookingForm from '../booking/BookingForm';
 import InquiryForm from '../inquiry/InquiryForm';
+import OrderForm from '../order/OrderForm';
 
 const VehicleDetailPage = () => {
     const { id } = useParams();
@@ -51,6 +52,7 @@ const VehicleDetailPage = () => {
     const [savingInProgress, setSavingInProgress] = useState(false);
     const [showBookingForm, setShowBookingForm] = useState(false);
     const [showInquiryForm, setShowInquiryForm] = useState(false);
+    const [showOrderForm, setShowOrderForm] = useState(false);
 
     useEffect(() => {
         const fetchVehicle = async () => {
@@ -846,6 +848,53 @@ const VehicleDetailPage = () => {
                 {/* Reviews Section */}
                 <ReviewSection vehicleId={id} />
             </div>
+
+            {/* Purchase Section */}
+            <div className="fixed bottom-0 left-0 right-0 bg-background-dark p-4 shadow-lg">
+                <div className="container mx-auto flex justify-between items-center">
+                    <div>
+                        <p className="text-text-primary text-2xl font-bold">
+                            ${vehicle?.pricing?.basePrice?.toLocaleString() || 'Price on request'}
+                        </p>
+                        {vehicle?.pricing?.leaseOptions && (
+                            <p className="text-text-secondary text-sm">
+                                Lease from ${vehicle.pricing.leaseOptions[0]?.monthlyPayment}/mo
+                            </p>
+                        )}
+                    </div>
+                    <button
+                        onClick={() => setShowOrderForm(true)}
+                        className="px-8 py-3 bg-primary-light text-white rounded-lg hover:bg-primary-dark transition-colors"
+                        disabled={!vehicle || vehicle.availability.status !== 'In Stock'}
+                    >
+                        {vehicle?.availability.status === 'In Stock' ? 'Purchase Now' : 'Not Available'}
+                    </button>
+                </div>
+            </div>
+
+            {/* Order Form Modal */}
+            <AnimatePresence>
+                {showOrderForm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-background-light rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+                        >
+                            <OrderForm
+                                vehicle={vehicle}
+                                onClose={() => setShowOrderForm(false)}
+                            />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <Footer />
         </div>

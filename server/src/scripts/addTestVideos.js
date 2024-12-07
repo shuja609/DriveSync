@@ -83,25 +83,25 @@ const descriptions = {
 
 const videoUrls = [
     // Tutorials
-    'https://www.youtube.com/watch?v=9N4RpohW-JU', // Car maintenance basics
-    'https://www.youtube.com/watch?v=yK7MXNaNGho', // How to drive a car
-    'https://www.youtube.com/watch?v=devo3kdSPQY', // Car dashboard symbols
+    'https://www.youtube.com/watch?v=BjX79GsALd8', // Car maintenance basics
+    'https://www.youtube.com/watch?v=3aiAxE53yhA', // How to drive a car
+    'https://www.youtube.com/watch?v=pwQUpLdCQ6g', // Car dashboard symbols
     // Reviews
-    'https://www.youtube.com/watch?v=79PHP3z1KP0', // Tesla Model 3 review
-    'https://www.youtube.com/watch?v=2PMu7MD9GvI', // BMW review
-    'https://www.youtube.com/watch?v=qGJyWJ1zabo', // Mercedes review
+    'https://www.youtube.com/watch?v=F8KUdvmW2EQ', // Tesla Model 3 review
+    'https://www.youtube.com/watch?v=B4Q_dlfQFyg', // BMW review
+    'https://www.youtube.com/watch?v=t6KoEJWLe78', // Mercedes review
     // Maintenance
-    'https://www.youtube.com/watch?v=O1hF25Cowv8', // Oil change guide
-    'https://www.youtube.com/watch?v=dHI91i2Sd8Y', // Tire maintenance
-    'https://www.youtube.com/watch?v=rDYbvI32OBE', // Battery maintenance
+    'https://www.youtube.com/watch?v=cUzj5JIwvqs', // Oil change guide
+    'https://www.youtube.com/watch?v=51Vh9xM79Oo', // Tire maintenance
+    'https://www.youtube.com/watch?v=V7EFAvFPOhw', // Battery maintenance
     // Feature Showcases
-    'https://www.youtube.com/watch?v=hIkCmbvAHQQ', // Safety features
-    'https://www.youtube.com/watch?v=9KR2N_Q8ep4', // Tech features
-    'https://www.youtube.com/watch?v=CwA1VWP0Ldw', // Performance features
+    'https://www.youtube.com/watch?v=Q7b0GDrku-E', // Safety features
+    'https://www.youtube.com/watch?v=q7D1SaQF1T8', // Tech features
+    'https://www.youtube.com/watch?v=7GbDem2XWIE', // Performance features
     // Demo Videos
-    'https://www.youtube.com/watch?v=5LI2zJLK0FA', // Test drive
-    'https://www.youtube.com/watch?v=WWZZkPqUY7c', // Track test
-    'https://www.youtube.com/watch?v=VX5S3E_wqAY'  // Off-road test
+    'https://www.youtube.com/watch?v=jm59QQoQH3o', // Test drive
+    'https://www.youtube.com/watch?v=V7VTR1_7ljY', // Track test
+    'https://www.youtube.com/watch?v=Vq_eKbPlF7U'  // Off-road test
 ];
 
 const thumbnailUrls = [

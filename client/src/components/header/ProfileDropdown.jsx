@@ -1,22 +1,67 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-    Person, 
-    Settings, 
-    Email, 
-    Notifications, 
-    Favorite,
-    History,
-    Help,
-    ExitToApp 
-} from '@mui/icons-material';
+    FiUser, 
+    FiSettings, 
+    FiMail, 
+    FiBell, 
+    FiHeart,
+    FiClock,
+    FiHelpCircle,
+    FiLogOut,
+    FiShoppingBag
+} from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 
 const ProfileDropdown = ({ user }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const { logout } = useAuth();
+    const navigate = useNavigate();
+
+    const menuItems = [
+        {
+            icon: <FiUser className="w-5 h-5" />,
+            label: 'Profile Overview',
+            path: '/profile'
+        },
+        {
+            icon: <FiSettings className="w-5 h-5" />,
+            label: 'Account Settings',
+            path: '/profile/settings'
+        },
+        {
+            icon: <FiMail className="w-5 h-5" />,
+            label: 'Email Settings',
+            path: '/profile/emails'
+        },
+        {
+            icon: <FiBell className="w-5 h-5" />,
+            label: 'Notifications',
+            path: '/profile/notifications'
+        },
+        {
+            icon: <FiShoppingBag className="w-5 h-5" />,
+            label: 'My Orders',
+            path: '/orders'
+        },
+        {
+            icon: <FiHeart className="w-5 h-5" />,
+            label: 'Saved Cars',
+            path: '/profile/saved'
+        },
+        {
+            icon: <FiClock className="w-5 h-5" />,
+            label: 'Activity History',
+            path: '/profile/activity'
+        },
+        {
+            icon: <FiHelpCircle className="w-5 h-5" />,
+            label: 'Support',
+            path: '/profile/support'
+        }
+    ];
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -29,15 +74,14 @@ const ProfileDropdown = ({ user }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const menuItems = [
-        { icon: <Person />, label: 'View Profile', link: '/profile' },
-        { icon: <Settings />, label: 'Account Settings', link: '/profile/settings' },
-        { icon: <Email />, label: 'Email Settings', link: '/profile/emails' },
-        { icon: <Notifications />, label: 'Notifications', link: '/profile/notifications' },
-        { icon: <Favorite />, label: 'Saved Cars', link: '/profile/saved' },
-        { icon: <History />, label: 'My Activity', link: '/profile/activity' },
-        { icon: <Help />, label: 'Help & Support', link: '/profile/support' },
-    ];
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -77,21 +121,23 @@ const ProfileDropdown = ({ user }) => {
                             {menuItems.map((item, index) => (
                                 <Link
                                     key={index}
-                                    to={item.link}
-                                    className="flex items-center px-4 py-2 text-sm text-text-primary hover:bg-background-dark"
+                                    to={item.path}
+                                    className="flex items-center space-x-3 px-4 py-2 text-text-primary hover:bg-background-dark transition-colors"
                                     onClick={() => setIsOpen(false)}
                                 >
-                                    <span className="w-5 h-5 mr-3">{item.icon}</span>
-                                    {item.label}
+                                    {item.icon}
+                                    <span>{item.label}</span>
                                 </Link>
                             ))}
+                        </div>
 
+                        <div className="border-t border-background-dark pt-2">
                             <button
-                                onClick={logout}
-                                className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-background-dark"
+                                onClick={handleLogout}
+                                className="w-full flex items-center space-x-3 px-4 py-2 text-red-500 hover:bg-background-dark transition-colors"
                             >
-                                <ExitToApp className="w-5 h-5 mr-3" />
-                                Logout
+                                <FiLogOut className="w-5 h-5" />
+                                <span>Logout</span>
                             </button>
                         </div>
                     </motion.div>
