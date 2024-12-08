@@ -47,6 +47,7 @@ import FeedbackManagement from './components/admin/feedback/FeedbackManagement';
 import AIChatBox from './components/chat/AIChatBox';
 import SalesLayout from './components/sales/layout/SalesLayout';
 import SalesDashboard from './components/sales/dashboard/SalesDashboard';
+import CustomerList from './components/sales/customers/CustomerList';
 
 const App = () => {
     const [errors, setErrors] = useState({});
@@ -177,8 +178,9 @@ const App = () => {
                         </SalesRoute>
                     }
                 >
-                    <Route index element={<SalesDashboard />} />
-                    <Route path="customers" element={<div>Customers</div>} />
+                    <Route index element={<Navigate to="/sales/dashboard" replace />} />
+                    <Route path="dashboard" element={<SalesDashboard />} />
+                    <Route path="customers" element={<CustomerList />} />
                     <Route path="appointments" element={<div>Appointments</div>} />
                     <Route path="orders" element={<div>Orders</div>} />
                     <Route path="reports" element={<div>Reports</div>} />
