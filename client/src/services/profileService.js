@@ -31,6 +31,15 @@ class ProfileService {
         return response.data;
     }
 
+    async updateProfilePicture(imageUrl) {
+        const response = await axios.put(`${API_URL}/profile/setup/profile-picture`, {
+            profilePicture: imageUrl
+        }, {
+            headers: getAuthHeader()
+        });
+        return response.data;
+    }
+
     async setupPersonalInfo(data) {
         const response = await axios.post(`${API_URL}/profile/setup/personal-info`, data, {
             headers: getAuthHeader()

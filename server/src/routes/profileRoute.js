@@ -11,8 +11,9 @@ router.get('/setup-progress', profileController.getSetupProgress);
 
 // Setup steps
 router.post('/setup/basic-info', profileController.setupBasicInfo);
-router.post('/setup/profile-picture', profileController.setupProfilePicture);
 router.post('/setup/personal-info', profileController.setupPersonalInfo);
+router.post('/setup/profile-picture', profileController.setupProfilePicture);
+router.put('/setup/profile-picture', profileController.updateProfilePicture);
 router.post('/setup/address', profileController.setupAddress);
 router.post('/setup/preferences', profileController.setupPreferences);
 

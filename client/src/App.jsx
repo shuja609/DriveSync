@@ -154,7 +154,7 @@ const App = () => {
                     <Route path="settings" element={<AdminSettings />} />
                 </Route>
             </Routes>
-            <Footer />
+            {/* <Footer /> */}
             <ToastContainer
                 position="top-right"
                 autoClose={5000}

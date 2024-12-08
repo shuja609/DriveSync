@@ -102,6 +102,18 @@ const profileController = {
         }
     },
 
+    // Update profile picture
+    async updateProfilePicture(req, res) {
+        try {
+            const { profilePicture } = req.body;
+            const user = await User.findByIdAndUpdate(req.user.id, { $set: { profilePicture } }, { new: true });
+            res.json({ success: true, profilePicture: user.profilePicture });
+        } catch (error) {
+            console.error('Update profile picture error:', error);
+            res.status(500).json({ success: false, message: 'Error updating profile picture' });
+        }
+    },
+
     // Step 3: Setup personal information
     async setupPersonalInfo(req, res) {
         try {

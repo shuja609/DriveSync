@@ -58,7 +58,7 @@ const mediaSchema = new mongoose.Schema({
     url: {
         type: String,
         required: true,
-        default: ''
+        //default: 'https://ui-avatars.com/api/?name=${vehicle.brand}+${vehicle.model}&background=5d9adf&color=000000'
     },
     isPrimary: {
         type: Boolean,

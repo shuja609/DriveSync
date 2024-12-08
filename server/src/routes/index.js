@@ -16,6 +16,7 @@ const inquiryRoutes = require('./inquiryRoute');
 const orderRoutes = require('./orderRoute');
 const transactionRoutes = require('./transactionRoute');
 const paymentRoutes = require('./paymentRoute');
+const accountRoutes = require('./accountRoute');
 
 // Define API routes
 router.use('/auth', authRoutes);
@@ -32,4 +33,6 @@ router.use('/inquiries', inquiryRoutes);
 router.use('/orders', orderRoutes);
 router.use('/transactions', transactionRoutes);
 router.use('/payments', paymentRoutes);
+router.use('/account', accountRoutes);
+
 module.exports = router;

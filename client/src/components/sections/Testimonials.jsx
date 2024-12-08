@@ -13,7 +13,7 @@ const testimonials = [
     name: "John Anderson",
     role: "Fleet Manager",
     company: "Enterprise Motors",
-    image: "/images/testimonials/john.jpg",
+    image: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHByb2Zlc3Npb25hbCUyMHBob3RvcyUyMHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D",
     rating: 5,
     quote: "DriveSync has revolutionized how we manage our showroom. The analytics and real-time tracking features are game-changers."
   },
@@ -22,7 +22,7 @@ const testimonials = [
     name: "Sarah Chen",
     role: "Sales Director",
     company: "Luxury Automobiles",
-    image: "/images/testimonials/sarah.jpg",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmVzc2lvbmFsJTIwcGhvdG9zJTIwcGVvcGxlfGVufDB8fDB8fHww",
     rating: 5,
     quote: "The cloud integration and mobile accessibility have made our operations seamless. Customer service is exceptional!"
   },
@@ -31,7 +31,7 @@ const testimonials = [
     name: "Michael Rodriguez",
     role: "Dealership Owner",
     company: "Premium Cars",
-    image: "/images/testimonials/michael.jpg",
+    image: "https://images.unsplash.com/photo-1558222218-b7b54eede3f3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fHByb2Zlc3Npb25hbCUyMHBob3RvcyUyMHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D",
     rating: 5,
     quote: "Since implementing DriveSync, our sales have increased by 40%. The inventory management system is simply outstanding."
   }

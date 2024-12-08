@@ -292,7 +292,7 @@ const SavedCars = () => {
                             {/* Car Image */}
                             <div className="relative aspect-[16/9]">
                                 <img
-                                    src={car.media?.find(m => m.isPrimary)?.url || car.media?.[0]?.url || '/images/car-placeholder.jpg'}
+                                    src={car.media?.find(m => m.isPrimary)?.url || car.media?.[0]?.url || `https://ui-avatars.com/api/?name=${car.brand}+${car.model}&background=5d9adf&color=000000`}
                                     alt={car.title || 'Car Image'}
                                     className="w-full h-full object-cover"
                                 />
