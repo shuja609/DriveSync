@@ -46,6 +46,17 @@ const adminOnly = (req, res, next) => {
     }
     next();
 };
+// Middleware to check if user has sales role
+const salesOnly = (req, res, next) => {
+    if (!req.user || !req.user.role === 'sales') {
+        return res.status(403).json({
+            success: false,
+            message: 'Access denied. Sales privileges required.'
+        });
+    }
+    next();
+};
+
 
 // Optional authentication middleware
 const optional = async (req, res, next) => {
@@ -71,5 +82,6 @@ const optional = async (req, res, next) => {
 module.exports = {
     protect,
     adminOnly,
-    optional
+    optional,
+    salesOnly
 }; 

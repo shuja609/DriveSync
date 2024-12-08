@@ -69,10 +69,10 @@ export const AuthProvider = ({ children }) => {
                 // Redirect based on profile completion
                 if(data.user.role === 'admin') {
                     navigate('/admin');
-                } else if (data.user.isProfileComplete) {
-                    navigate('/');
+                } else if (data.user.role === 'sales') {
+                    navigate('/sales');
                 } else {
-                    navigate('/setup/step1');
+                    navigate('/');
                 }
             } else {
                 setError('Invalid email or password. Please try again.');

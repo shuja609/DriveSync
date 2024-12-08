@@ -19,7 +19,8 @@ const PrivateRoute = ({ children }) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    return children;
+    // Support both render props and regular children
+    return typeof children === 'function' ? children({ user }) : children;
 };
 
 export default PrivateRoute; 

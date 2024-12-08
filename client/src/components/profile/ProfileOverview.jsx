@@ -60,6 +60,8 @@ const ProfileOverview = () => {
         }
     };
 
+    
+
     return (
         <ProfileLayout title="Profile Overview">
             <div className="space-y-6">
@@ -109,7 +111,7 @@ const ProfileOverview = () => {
                             <div className="text-center sm:text-left flex-grow">
                                 <div className="flex flex-col sm:justify-center h-full">
                                     <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-2">
-                                        {user?.name?.first} {user?.name?.last}
+                                        {user?.name}
                                     </h2>
                                     <p className="text-primary-light">Member since {new Date(user?.createdAt).toLocaleDateString()}</p>
                                     <div className="mt-2 flex items-center justify-center sm:justify-start space-x-4">

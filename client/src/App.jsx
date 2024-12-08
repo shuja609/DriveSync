@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import Footer from './components/layout/Footer';
 import ErrorPage from './components/error/ErrorPage';
@@ -45,10 +45,23 @@ import AdminSettings from './components/admin/settings/AdminSettings';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import FeedbackManagement from './components/admin/feedback/FeedbackManagement';
 import AIChatBox from './components/chat/AIChatBox';
+import SalesLayout from './components/sales/layout/SalesLayout';
+import SalesDashboard from './components/sales/dashboard/SalesDashboard';
 
 const App = () => {
     const [errors, setErrors] = useState({});
     const { enqueueSnackbar } = useSnackbar();
+
+    const SalesRoute = ({ children }) => (
+        <PrivateRoute>
+            {({ user }) => {
+                if (user.role !== 'sales') {
+                    return <Navigate to="/" replace />;
+                }
+                return children;
+            }}
+        </PrivateRoute>
+    );
 
     return (
         <SnackbarProvider maxSnack={3}>
@@ -153,6 +166,22 @@ const App = () => {
                     <Route path="content" element={<ContentManagement />} />
                     <Route path="feedback" element={<FeedbackManagement />} />
                     <Route path="settings" element={<AdminSettings />} />
+                </Route>
+
+                {/* Sales Panel Routes */}
+                <Route
+                    path="/sales"
+                    element={
+                        <SalesRoute>
+                            <SalesLayout />
+                        </SalesRoute>
+                    }
+                >
+                    <Route index element={<SalesDashboard />} />
+                    <Route path="customers" element={<div>Customers</div>} />
+                    <Route path="appointments" element={<div>Appointments</div>} />
+                    <Route path="orders" element={<div>Orders</div>} />
+                    <Route path="reports" element={<div>Reports</div>} />
                 </Route>
             </Routes>
             <AIChatBox />
