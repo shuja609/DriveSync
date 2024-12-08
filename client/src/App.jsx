@@ -44,6 +44,7 @@ import ContentManagement from './components/admin/content/ContentManagement';
 import AdminSettings from './components/admin/settings/AdminSettings';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import FeedbackManagement from './components/admin/feedback/FeedbackManagement';
+import AIChatBox from './components/chat/AIChatBox';
 
 const App = () => {
     const [errors, setErrors] = useState({});
@@ -154,17 +155,18 @@ const App = () => {
                     <Route path="settings" element={<AdminSettings />} />
                 </Route>
             </Routes>
-            {/* <Footer /> */}
+            <AIChatBox />
             <ToastContainer
                 position="top-right"
                 autoClose={5000}
                 hideProgressBar={false}
-                newestOnTop
+                newestOnTop={false}
                 closeOnClick
                 rtl={false}
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
+                theme="colored"
             />
         </SnackbarProvider>
     );

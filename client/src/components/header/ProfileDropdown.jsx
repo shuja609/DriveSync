@@ -91,7 +91,7 @@ const ProfileDropdown = ({ user }) => {
             >
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                     <img
-                        src={user.profilePicture || '/default-avatar.png'}
+                        src={user?.profilePicture || '/default-avatar.png'}
                         alt="Profile"
                         className="w-full h-full object-cover"
                     />
@@ -109,10 +109,10 @@ const ProfileDropdown = ({ user }) => {
                         {/* User Info */}
                         <div className="px-4 py-3 border-b border-gray-700">
                             <p className="text-sm text-text-primary font-medium">
-                                {user.name}
+                                {user?.name?.first} {user?.name?.last}
                             </p>
                             <p className="text-xs text-text-primary/70 truncate">
-                                {user.email}
+                                {user?.email}
                             </p>
                         </div>
 

@@ -16,6 +16,21 @@ const keys = {
         secret: process.env.JWT_SECRET,
         expiresIn: process.env.JWT_EXPIRES_IN || '24h'
     },
+    gemini: {
+        apiKey: process.env.GEMINI_API_KEY
+    },
+
+    // Validate all required environment variables
+    validate: function() {
+        const requiredVars = [
+            'GEMINI_API_KEY'
+        ];
+
+        const missing = requiredVars.filter(varName => !process.env[varName]);
+        if (missing.length > 0) {
+            throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+        }
+    },
 
     database: {
         url: process.env.MONGODB_URI || 'mongodb://localhost:27017/DriveSync'

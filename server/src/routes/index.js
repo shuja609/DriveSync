@@ -17,6 +17,7 @@ const orderRoutes = require('./orderRoute');
 const transactionRoutes = require('./transactionRoute');
 const paymentRoutes = require('./paymentRoute');
 const accountRoutes = require('./accountRoute');
+const geminiRoute = require('./geminiRoute');
 
 // Define API routes
 router.use('/auth', authRoutes);
@@ -34,5 +35,6 @@ router.use('/orders', orderRoutes);
 router.use('/transactions', transactionRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/account', accountRoutes);
+router.use('/gemini', geminiRoute);
 
 module.exports = router;
