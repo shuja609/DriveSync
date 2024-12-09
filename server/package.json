@@ -11,7 +11,8 @@
     "add-test-reviews": "node src/scripts/addTestReviews.js",
     "add-test-data": "node src/scripts/addTestData.js",
     "add-test-videos": "node src/scripts/addTestVideos.js",
-    "add-test-orders": "node src/scripts/addTestOrders.js"
+    "add-test-orders": "node src/scripts/addTestOrders.js",
+    "add-test-quotations": "node src/scripts/addTestQuotations.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

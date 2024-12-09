@@ -48,6 +48,8 @@ import AIChatBox from './components/chat/AIChatBox';
 import SalesLayout from './components/sales/layout/SalesLayout';
 import SalesDashboard from './components/sales/dashboard/SalesDashboard';
 import CustomerList from './components/sales/customers/CustomerList';
+import QuotationList from './components/sales/quotations/QuotationList';
+import CreateQuotationModal from './components/sales/quotations/CreateQuotationModal';
 
 const App = () => {
     const [errors, setErrors] = useState({});
@@ -181,9 +183,8 @@ const App = () => {
                     <Route index element={<Navigate to="/sales/dashboard" replace />} />
                     <Route path="dashboard" element={<SalesDashboard />} />
                     <Route path="customers" element={<CustomerList />} />
-                    <Route path="appointments" element={<div>Appointments</div>} />
-                    <Route path="orders" element={<div>Orders</div>} />
-                    <Route path="reports" element={<div>Reports</div>} />
+                    <Route path="quotations" element={<QuotationList />} />
+                    <Route path="settings" element={<div>Settings Page</div>} />
                 </Route>
             </Routes>
             <AIChatBox />

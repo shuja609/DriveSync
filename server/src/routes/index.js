@@ -21,6 +21,7 @@ const geminiRoute = require('./geminiRoute');
 const dashboardRoutes = require('./dashboardRoute');
 const customerRoutes = require('./customerRoute');
 const interactionRoutes = require('./interactionRoute');
+const quotationRoutes = require('./quotationRoute');
 
 // Define API routes
 router.use('/auth', authRoutes);
@@ -42,5 +43,6 @@ router.use('/gemini', geminiRoute);
 router.use('/dashboard', dashboardRoutes);
 router.use('/customers', customerRoutes);
 router.use('/interactions', interactionRoutes);
+router.use('/quotations', quotationRoutes);
 
 module.exports = router;

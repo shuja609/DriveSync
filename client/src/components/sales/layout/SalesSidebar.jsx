@@ -4,19 +4,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     FiHome, 
     FiUsers, 
-    FiCalendar, 
-    FiDollarSign, 
     FiFileText,
+    FiSettings,
     FiMenu,
     FiX
 } from 'react-icons/fi';
 
 const menuItems = [
-    { path: '/sales', icon: FiHome, label: 'Dashboard' },
+    { path: '/sales/dashboard', icon: FiHome, label: 'Dashboard' },
     { path: '/sales/customers', icon: FiUsers, label: 'Customers' },
-    { path: '/sales/appointments', icon: FiCalendar, label: 'Appointments' },
-    { path: '/sales/orders', icon: FiDollarSign, label: 'Orders' },
-    { path: '/sales/reports', icon: FiFileText, label: 'Reports' },
+    { path: '/sales/quotations', icon: FiFileText, label: 'Quotations' },
+    { path: '/sales/settings', icon: FiSettings, label: 'Settings' }
 ];
 
 const SalesSidebar = () => {
@@ -40,8 +38,8 @@ const SalesSidebar = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`flex items-center p-3 rounded-lg mb-2 transition-colors ${
-                        isActive 
-                            ? 'bg-primary-light text-white' 
+                        isActive
+                            ? 'bg-primary-light text-white'
                             : 'text-text-primary hover:bg-background-light'
                     }`}
                 >
