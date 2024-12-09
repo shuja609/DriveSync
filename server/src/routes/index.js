@@ -23,7 +23,7 @@ const customerRoutes = require('./customerRoute');
 const interactionRoutes = require('./interactionRoute');
 const quotationRoutes = require('./quotationRoute');
 const sellerInquiryRoutes = require('./sellerInquiryRoute');
-
+const sellerOrderRoutes = require('./sellerOrderRoute');
 // Define API routes
 router.use('/auth', authRoutes);
 router.use('/profile', profileRoutes);
@@ -46,5 +46,6 @@ router.use('/customers', customerRoutes);
 router.use('/interactions', interactionRoutes);
 router.use('/quotations', quotationRoutes);
 router.use('/sellerInquiries', sellerInquiryRoutes);
+router.use('/sellerOrders', sellerOrderRoutes);
 
 module.exports = router;

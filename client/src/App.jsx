@@ -51,6 +51,7 @@ import CustomerList from './components/sales/customers/CustomerList';
 import QuotationList from './components/sales/quotations/QuotationList';
 import CreateQuotationModal from './components/sales/quotations/CreateQuotationModal';
 import SellerInquiryManagement from './components/seller/inquiries/SellerInquiryManagement';
+import SellerOrderManagement from './components/seller/orders/SellerOrderManagement';
 
 const App = () => {
     const [errors, setErrors] = useState({});
@@ -184,6 +185,7 @@ const App = () => {
                     <Route index element={<Navigate to="/sales/dashboard" replace />} />
                     <Route path="dashboard" element={<SalesDashboard />} />
                     <Route path="customers" element={<CustomerList />} />
+                    <Route path="orders" element={<SellerOrderManagement />} />
                     <Route path="quotations" element={<QuotationList />} />
                     <Route path="inquiries" element={<SellerInquiryManagement />} />
                     <Route path="settings" element={<div>Settings Page</div>} />
