@@ -50,6 +50,7 @@ import SalesDashboard from './components/sales/dashboard/SalesDashboard';
 import CustomerList from './components/sales/customers/CustomerList';
 import QuotationList from './components/sales/quotations/QuotationList';
 import CreateQuotationModal from './components/sales/quotations/CreateQuotationModal';
+import SellerInquiryManagement from './components/seller/inquiries/SellerInquiryManagement';
 
 const App = () => {
     const [errors, setErrors] = useState({});
@@ -184,6 +185,7 @@ const App = () => {
                     <Route path="dashboard" element={<SalesDashboard />} />
                     <Route path="customers" element={<CustomerList />} />
                     <Route path="quotations" element={<QuotationList />} />
+                    <Route path="inquiries" element={<SellerInquiryManagement />} />
                     <Route path="settings" element={<div>Settings Page</div>} />
                 </Route>
             </Routes>

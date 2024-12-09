@@ -7,13 +7,15 @@ import {
     FiFileText,
     FiSettings,
     FiMenu,
-    FiX
+    FiX,
+    FiMessageSquare
 } from 'react-icons/fi';
 
 const menuItems = [
     { path: '/sales/dashboard', icon: FiHome, label: 'Dashboard' },
     { path: '/sales/customers', icon: FiUsers, label: 'Customers' },
     { path: '/sales/quotations', icon: FiFileText, label: 'Quotations' },
+    { path: '/sales/inquiries', icon: FiMessageSquare, label: 'Inquiries' },
     { path: '/sales/settings', icon: FiSettings, label: 'Settings' }
 ];
 
