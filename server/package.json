@@ -12,7 +12,8 @@
     "add-test-data": "node src/scripts/addTestData.js",
     "add-test-videos": "node src/scripts/addTestVideos.js",
     "add-test-orders": "node src/scripts/addTestOrders.js",
-    "add-test-quotations": "node src/scripts/addTestQuotations.js"
+    "add-test-quotations": "node src/scripts/addTestQuotations.js",
+    "seed:discounts": "node src/scripts/seedDiscounts.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
