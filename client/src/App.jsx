@@ -53,6 +53,7 @@ import CreateQuotationModal from './components/sales/quotations/CreateQuotationM
 import SellerInquiryManagement from './components/seller/inquiries/SellerInquiryManagement';
 import SellerOrderManagement from './components/seller/orders/SellerOrderManagement';
 import SellerDiscountManagement from './components/seller/discounts/SellerDiscountManagement';
+import SellerFeedbackManagement from './components/seller/feedback/SellerFeedbackManagement';
 
 const App = () => {
     const [errors, setErrors] = useState({});
@@ -190,6 +191,7 @@ const App = () => {
                     <Route path="quotations" element={<QuotationList />} />
                     <Route path="inquiries" element={<SellerInquiryManagement />} />
                     <Route path="discounts" element={<SellerDiscountManagement />} />
+                    <Route path="feedback" element={<SellerFeedbackManagement />} />
                     <Route path="settings" element={<div>Settings Page</div>} />
                 </Route>
             </Routes>

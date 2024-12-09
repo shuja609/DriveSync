@@ -10,7 +10,8 @@ import {
     FiX,
     FiMessageSquare,
     FiShoppingCart,
-    FiTag
+    FiTag,
+    FiMessageCircle
 } from 'react-icons/fi';
 
 const menuItems = [
@@ -20,7 +21,8 @@ const menuItems = [
     { path: '/sales/quotations', icon: FiFileText, label: 'Quotations' },
     { path: '/sales/inquiries', icon: FiMessageSquare, label: 'Inquiries' },
     { path: '/sales/discounts', icon: FiTag, label: 'Discounts' },
-    { path: '/sales/settings', icon: FiSettings, label: 'Settings' }
+    { path: '/sales/settings', icon: FiSettings, label: 'Settings' },
+    { path: '/sales/feedback', icon: FiMessageCircle, label: 'Feedback' }
 ];
 
 const SalesSidebar = () => {
