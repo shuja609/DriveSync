@@ -100,12 +100,12 @@ const SellerFeedbackManagement = () => {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-primary-light">Feedback Management</h1>
+                    <h1 className="text-xl sm:text-2xl font-bold text-primary">Feedback Management</h1>
                     {stats && (
-                        <div className="flex gap-4 mt-2">
+                        <div className="flex flex-wrap gap-4 mt-2">
                             <div className="text-sm">
                                 <span className="text-yellow-500 font-semibold">
                                     {stats.status.find(s => s._id === 'Open')?.count || 0}
@@ -124,11 +124,11 @@ const SellerFeedbackManagement = () => {
                         </div>
                     )}
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
                     <select
                         value={filters.status}
                         onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                        className="p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary w-full sm:w-auto"
                     >
                         <option value="all">All Status</option>
                         <option value="Open">Open</option>
@@ -138,7 +138,7 @@ const SellerFeedbackManagement = () => {
                     <select
                         value={filters.type}
                         onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
-                        className="p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary w-full sm:w-auto"
                     >
                         <option value="all">All Types</option>
                         <option value="Bug Report">Bug Report</option>
@@ -149,7 +149,7 @@ const SellerFeedbackManagement = () => {
                     <select
                         value={filters.priority}
                         onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
-                        className="p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary w-full sm:w-auto"
                     >
                         <option value="all">All Priorities</option>
                         <option value="High">High</option>
@@ -172,9 +172,9 @@ const SellerFeedbackManagement = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="bg-white p-4 rounded-lg shadow"
                         >
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                                <div className="flex-1 w-full">
+                                    <div className="flex flex-wrap items-center gap-2 mb-2">
                                         <h3 className="font-semibold text-lg text-primary-light">{item.subject}</h3>
                                         <span className={`px-3 py-1 rounded-full text-white text-sm ${getStatusColor(item.status)}`}>
                                             {item.status}
@@ -184,7 +184,7 @@ const SellerFeedbackManagement = () => {
                                         </span>
                                     </div>
                                     <p className="text-gray-600 mb-2">{item.message}</p>
-                                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-500">
                                         <span>From: {item.userId?.name ? `${item.userId.name.first} ${item.userId.name.last}` : 'Unknown User'}</span>
                                         <span>Type: {item.type}</span>
                                         <span>
@@ -195,21 +195,25 @@ const SellerFeedbackManagement = () => {
                                         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                                             <p className="text-gray-700">{item.response}</p>
                                             <div className="mt-2 text-sm text-gray-500">
-                                                Responded by: {item.respondedBy?.name ? 
-                                                    `${item.respondedBy.name.first} ${item.respondedBy.name.last}` : 
-                                                    'Unknown User'}
-                                                <span className="ml-2">
-                                                    {new Date(item.respondedAt).toLocaleDateString()}
-                                                </span>
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <span>
+                                                        Responded by: {item.respondedBy?.name ? 
+                                                            `${item.respondedBy.name.first} ${item.respondedBy.name.last}` : 
+                                                            'Unknown User'}
+                                                    </span>
+                                                    <span>
+                                                        {new Date(item.respondedAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
                                     <select
                                         value={item.status}
                                         onChange={(e) => handleStatusChange(item._id, e.target.value)}
-                                        className="p-2 border-2 border-primary focus:border-primary-light focus:ring-primary-light rounded text-sm text-primary-light"
+                                        className="p-2 border border-primary text-primary rounded text-sm flex-1 sm:flex-none"
                                     >
                                         <option value="Open">Open</option>
                                         <option value="In Progress">In Progress</option>
@@ -218,7 +222,7 @@ const SellerFeedbackManagement = () => {
                                     <select
                                         value={item.priority}
                                         onChange={(e) => handlePriorityChange(item._id, e.target.value)}
-                                        className="p-2 border-2 border-primary focus:border-primary-light focus:ring-primary-light rounded text-sm text-primary-light"
+                                        className="p-2 border border-primary text-primary rounded text-sm flex-1 sm:flex-none"
                                     >
                                         <option value="Low">Low</option>
                                         <option value="Medium">Medium</option>
@@ -229,9 +233,9 @@ const SellerFeedbackManagement = () => {
                                             setSelectedFeedback(item);
                                             setIsResponseModalOpen(true);
                                         }}
-                                        className="p-2 text-blue-500 hover:bg-blue-50 rounded"
+                                        className="p-2 text-blue-500 hover:bg-blue-50 rounded flex-1 sm:flex-none"
                                     >
-                                        <FiMessageSquare />
+                                        <FiMessageSquare className="mx-auto" />
                                     </button>
                                 </div>
                             </div>
@@ -242,23 +246,23 @@ const SellerFeedbackManagement = () => {
 
             {/* Response Modal */}
             {isResponseModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
-                        <h2 className="text-xl font-bold mb-4 text-primary-light">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div className="bg-white p-4 sm:p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <h2 className="text-lg sm:text-xl font-bold mb-4 text-primary">
                             Respond to Feedback
                         </h2>
                         <form onSubmit={handleSubmitResponse} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-primary-light">Response</label>
+                                <label className="block text-sm font-medium text-gray-700">Response</label>
                                 <textarea
                                     value={response}
                                     onChange={(e) => setResponse(e.target.value)}
-                                    className="mt-1 block w-full rounded-md border-2 border-primary focus:border-primary-light focus:ring-primary-light text-primary-light"
+                                    className="mt-1 block w-full rounded-md border-primary border-2 text-primary focus:border-primary focus:ring-primary"
                                     rows="4"
                                     required
                                 />
                             </div>
-                            <div className="flex justify-end gap-2">
+                            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2">
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -266,13 +270,13 @@ const SellerFeedbackManagement = () => {
                                         setSelectedFeedback(null);
                                         setResponse('');
                                     }}
-                                    className="px-4 py-2 text-sm text-primary-light hover:text-primary-dark"
+                                    className="px-4 py-2 text-sm text-primary hover:text-primary-dark w-full sm:w-auto"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-dark"
+                                    className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-dark w-full sm:w-auto"
                                 >
                                     Submit Response
                                 </button>

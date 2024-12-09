@@ -109,14 +109,14 @@ const SellerOrderManagement = () => {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-primary">Order Management</h1>
-                <div className="flex gap-2">
+        <div className="p-2 sm:p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4 sm:gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-primary">Order Management</h1>
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <select
                         value={filters.status}
                         onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                        className="p-2 border rounded-lg focus:outline-none text-black/80 focus:ring-2 focus:ring-primary-light"
+                        className="w-full sm:w-auto p-2 border rounded-lg focus:outline-none text-black/80 focus:ring-2 focus:ring-primary-light"
                     >
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -128,7 +128,7 @@ const SellerOrderManagement = () => {
                     <select
                         value={filters.paymentStatus}
                         onChange={(e) => setFilters(prev => ({ ...prev, paymentStatus: e.target.value }))}
-                        className="p-2 border rounded-lg focus:outline-none text-black/80 focus:ring-2 focus:ring-primary-light"
+                        className="w-full sm:w-auto p-2 border rounded-lg focus:outline-none text-black/80 focus:ring-2 focus:ring-primary-light"
                     >
                         <option value="all">All Payment Status</option>
                         <option value="pending">Pending</option>
@@ -139,7 +139,7 @@ const SellerOrderManagement = () => {
                     <select
                         value={filters.deliveryStatus}
                         onChange={(e) => setFilters(prev => ({ ...prev, deliveryStatus: e.target.value }))}
-                        className="p-2 border rounded-lg focus:outline-none text-black/80 focus:ring-2 focus:ring-primary-light"
+                        className="w-full sm:w-auto p-2 border rounded-lg focus:outline-none text-black/80 focus:ring-2 focus:ring-primary-light"
                     >
                         <option value="all">All Delivery Status</option>
                         <option value="pending">Pending</option>
@@ -160,35 +160,35 @@ const SellerOrderManagement = () => {
                             key={order._id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white p-4 rounded-lg shadow"
+                            className="bg-white p-3 sm:p-4 rounded-lg shadow"
                         >
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <h3 className="font-semibold text-lg text-primary-light">Order #{order.orderNumber}</h3>
-                                        <span className={`px-3 py-1 rounded-full text-white text-sm ${getStatusColor(order.status)}`}>
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                                <div className="flex-1 w-full">
+                                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                                        <h3 className="font-semibold text-base sm:text-lg text-primary-light">Order #{order.orderNumber}</h3>
+                                        <span className={`px-2 sm:px-3 py-1 rounded-full text-white text-xs sm:text-sm ${getStatusColor(order.status)}`}>
                                             {order.status.toUpperCase()}
                                         </span>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                         <div>
-                                            <p className="text-gray-600">
+                                            <p className="text-sm sm:text-base text-gray-600">
                                                 Customer: {order.userId.name.first} {order.userId.name.last}
                                             </p>
-                                            <p className="text-gray-600">
+                                            <p className="text-sm sm:text-base text-gray-600">
                                                 Vehicle: {order.vehicleId.make} {order.vehicleId.model} {order.vehicleId.year}
                                             </p>
-                                            <p className="text-gray-600">
+                                            <p className="text-sm sm:text-base text-gray-600">
                                                 Amount: ${order.amount.toLocaleString()}
                                             </p>
                                         </div>
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
                                                 <FiDollarSign className="text-primary-light" />
                                                 <select
                                                     value={order.paymentDetails.status}
                                                     onChange={(e) => handlePaymentStatusChange(order._id, e.target.value)}
-                                                    className="p-1 border border-primary-light rounded text-black/80"
+                                                    className="flex-1 p-1 text-sm border border-primary-light rounded text-black/80"
                                                 >
                                                     <option value="pending">Payment Pending</option>
                                                     <option value="completed">Payment Completed</option>
@@ -201,7 +201,7 @@ const SellerOrderManagement = () => {
                                                 <select
                                                     value={order.shippingDetails.deliveryStatus}
                                                     onChange={(e) => handleDeliveryStatusChange(order._id, e.target.value)}
-                                                    className="p-1 border border-primary-light rounded text-black/80"
+                                                    className="flex-1 p-1 text-sm border border-primary-light rounded text-black/80"
                                                 >
                                                     <option value="pending">Delivery Pending</option>
                                                     <option value="in_transit">In Transit</option>
@@ -213,13 +213,13 @@ const SellerOrderManagement = () => {
 
                                     {selectedOrder?._id === order._id && (
                                         <div className="mt-4 space-y-4">
-                                            <div className="flex gap-2">
+                                            <div className="flex flex-col sm:flex-row gap-2">
                                                 <input
                                                     type="text"
                                                     value={noteText}
                                                     onChange={(e) => setNoteText(e.target.value)}
                                                     placeholder="Add a note..."
-                                                    className="flex-1 p-2 border border-primary-light rounded-lg text-black/80"
+                                                    className="flex-1 p-2 text-sm border border-primary-light rounded-lg text-black/80"
                                                 />
                                                 <button
                                                     onClick={() => handleAddNote(order._id)}
@@ -228,11 +228,11 @@ const SellerOrderManagement = () => {
                                                     <FiMessageSquare />
                                                 </button>
                                             </div>
-                                            <div className="flex gap-2">
+                                            <div className="flex flex-col sm:flex-row gap-2">
                                                 <select
                                                     value={documentType}
                                                     onChange={(e) => setDocumentType(e.target.value)}
-                                                    className="p-2 border border-primary-light rounded-lg text-black/80"
+                                                    className="flex-1 p-2 text-sm border border-primary-light rounded-lg text-black/80"
                                                 >
                                                     <option value="">Select Document Type</option>
                                                     <option value="purchase_agreement">Purchase Agreement</option>
@@ -241,35 +241,37 @@ const SellerOrderManagement = () => {
                                                     <option value="registration">Registration</option>
                                                     <option value="financing_agreement">Financing Agreement</option>
                                                 </select>
-                                                <input
-                                                    type="file"
-                                                    onChange={(e) => setSelectedFile(e.target.files[0])}
-                                                    className="hidden"
-                                                    id={`file-upload-${order._id}`}
-                                                />
-                                                <label
-                                                    htmlFor={`file-upload-${order._id}`}
-                                                    className="p-2 bg-gray-100 text-gray-600 rounded-lg cursor-pointer hover:bg-gray-200"
-                                                >
-                                                    <FiUpload />
-                                                </label>
-                                                {selectedFile && (
-                                                    <button
-                                                        onClick={() => handleFileUpload(order._id)}
-                                                        className="p-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="file"
+                                                        onChange={(e) => setSelectedFile(e.target.files[0])}
+                                                        className="hidden"
+                                                        id={`file-upload-${order._id}`}
+                                                    />
+                                                    <label
+                                                        htmlFor={`file-upload-${order._id}`}
+                                                        className="p-2 bg-gray-100 text-gray-600 rounded-lg cursor-pointer hover:bg-gray-200"
                                                     >
-                                                        Upload
-                                                    </button>
-                                                )}
+                                                        <FiUpload />
+                                                    </label>
+                                                    {selectedFile && (
+                                                        <button
+                                                            onClick={() => handleFileUpload(order._id)}
+                                                            className="p-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                                                        >
+                                                            Upload
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     )}
 
-                                    <div className="flex justify-between items-center mt-4">
+                                    <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mt-4">
                                         <select
                                             value={order.status}
                                             onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                            className="p-2 border border-primary-light rounded-lg text-black/80"
+                                            className="w-full sm:w-auto p-2 text-sm border border-primary-light rounded-lg text-black/80"
                                         >
                                             <option value="pending">Pending</option>
                                             <option value="processing">Processing</option>
@@ -279,7 +281,7 @@ const SellerOrderManagement = () => {
                                         </select>
                                         <button
                                             onClick={() => setSelectedOrder(selectedOrder?._id === order._id ? null : order)}
-                                            className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-dark"
+                                            className="w-full sm:w-auto px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-dark"
                                         >
                                             {selectedOrder?._id === order._id ? 'Close' : 'Manage'}
                                         </button>
@@ -294,4 +296,4 @@ const SellerOrderManagement = () => {
     );
 };
 
-export default SellerOrderManagement; 
+export default SellerOrderManagement;

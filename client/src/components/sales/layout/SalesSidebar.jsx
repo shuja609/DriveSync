@@ -21,8 +21,9 @@ const menuItems = [
     { path: '/sales/quotations', icon: FiFileText, label: 'Quotations' },
     { path: '/sales/inquiries', icon: FiMessageSquare, label: 'Inquiries' },
     { path: '/sales/discounts', icon: FiTag, label: 'Discounts' },
-    { path: '/sales/settings', icon: FiSettings, label: 'Settings' },
-    { path: '/sales/feedback', icon: FiMessageCircle, label: 'Feedback' }
+    { path: '/sales/feedback', icon: FiMessageCircle, label: 'Feedback' },
+    { path: '/sales/settings', icon: FiSettings, label: 'Settings' }
+    
 ];
 
 const SalesSidebar = () => {
@@ -64,9 +65,9 @@ const SalesSidebar = () => {
     const MobileMenuButton = () => (
         <button
             onClick={toggleMobileSidebar}
-            className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-background-dark text-text-primary"
+            className="lg:hidden fixed top-4 left-4 z-0 p-2 rounded-lg bg-background-dark text-text-primary"
         >
-            {isMobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            {!isMobileOpen ? <FiMenu size={24} /> : <FiX size={24} />}
         </button>
     );
 
@@ -118,7 +119,13 @@ const SalesSidebar = () => {
                         >
                             <div className="p-4">
                                 <div className="flex items-center justify-between mb-8">
-                                    <h1 className="text-xl font-bold text-text-primary">Sales Panel</h1>
+                                    <h1 className="text-xl font-bold text-text-primary ">Sales Panel</h1>
+                                    <button
+                                        onClick={toggleMobileSidebar}
+                                        className="p-2 rounded-lg hover:bg-background-light text-text-primary"
+                                    >
+                                        <FiX size={24} />
+                                    </button>
                                 </div>
                                 <nav>
                                     {menuItems.map((item, index) => (

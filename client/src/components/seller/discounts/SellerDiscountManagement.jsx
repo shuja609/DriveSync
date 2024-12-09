@@ -151,29 +151,29 @@ const SellerDiscountManagement = () => {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-primary-light">Discount Management</h1>
+        <div className="p-4 sm:p-6 max-w-full overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 max-w-full">
+                <div className="w-full sm:w-auto">
+                    <h1 className="text-xl sm:text-2xl font-bold text-primary truncate ">Discount Management</h1>
                     {stats && (
-                        <div className="flex gap-4 mt-2">
-                            <div className="text-sm">
+                        <div className="flex flex-wrap gap-2 sm:gap-4 mt-2">
+                            <div className="text-sm whitespace-nowrap">
                                 <span className="text-green-500 font-semibold">{stats.summary.active}</span> Active
                             </div>
-                            <div className="text-sm">
+                            <div className="text-sm whitespace-nowrap">
                                 <span className="text-yellow-500 font-semibold">{stats.summary.inactive}</span> Inactive
                             </div>
-                            <div className="text-sm">
+                            <div className="text-sm whitespace-nowrap">
                                 <span className="text-red-500 font-semibold">{stats.summary.expired}</span> Expired
                             </div>
                         </div>
                     )}
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
                     <select
                         value={filters.status}
                         onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                        className="p-2 border rounded-lg text-black/80 focus:outline-none focus:ring-2 focus:ring-primary-light"
+                        className="p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary w-full sm:w-auto min-w-[120px]"
                     >
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
@@ -183,7 +183,7 @@ const SellerDiscountManagement = () => {
                     <select
                         value={filters.type}
                         onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
-                        className="p-2 border rounded-lg text-black/80 focus:outline-none focus:ring-2 focus:ring-primary-light"
+                        className="p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary w-full sm:w-auto min-w-[120px]"
                     >
                         <option value="all">All Types</option>
                         <option value="percentage">Percentage</option>
@@ -194,7 +194,7 @@ const SellerDiscountManagement = () => {
                             setSelectedDiscount(null);
                             setIsModalOpen(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                        className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark w-full sm:w-auto whitespace-nowrap"
                     >
                         <FiPlus /> New Discount
                     </button>
@@ -206,60 +206,70 @@ const SellerDiscountManagement = () => {
             ) : discounts.length === 0 ? (
                 <div className="text-center py-4">No discounts found</div>
             ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-4 max-w-full">
                     {discounts.map((discount) => (
                         <motion.div
                             key={discount._id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white p-4 rounded-lg shadow"
+                            className="bg-white p-4 rounded-lg shadow overflow-hidden"
                         >
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <h3 className="font-semibold text-lg text-primary-light">{discount.code}</h3>
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                                        <h3 className="font-semibold text-lg truncate text-primary-light">{discount.code}</h3>
                                         <select
                                             value={discount.status}
                                             onChange={(e) => handleStatusChange(discount._id, e.target.value)}
-                                            className={`px-3 py-1 rounded-full text-white text-sm ${getStatusColor(discount.status)} cursor-pointer border-none focus:ring-2 focus:ring-offset-2`}
+                                            className={`px-3 py-1 rounded-full text-white text-sm ${getStatusColor(discount.status)} cursor-pointer border-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap appearance-none`}
+                                            style={{ 
+                                                backgroundImage: 'none',
+                                                paddingRight: '1.5rem'
+                                            }}
                                         >
                                             <option value="active" className="bg-gray-800 text-white">ACTIVE</option>
                                             <option value="inactive" className="bg-gray-800 text-white">INACTIVE</option>
                                             <option value="expired" className="bg-gray-800 text-white">EXPIRED</option>
                                         </select>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <p className="text-gray-600 flex items-center gap-2">
-                                                <FiPercent className="text-primary-light"/>
-                                                {discount.type === 'percentage' ? `${discount.value}% off` : `$${discount.value} off`}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                        <div className="min-w-0">
+                                            <p className="text-gray-600 flex items-center gap-2 truncate">
+                                                <FiPercent className="flex-shrink-0 text-primary-light" />
+                                                <span className="truncate">
+                                                    {discount.type === 'percentage' ? `${discount.value}% off` : `$${discount.value} off`}
+                                                </span>
                                             </p>
                                             <p className="text-gray-600 flex items-center gap-2">
-                                                <FiCalendar className="text-primary-light"/>
-                                                {new Date(discount.startDate).toLocaleDateString()} - {new Date(discount.endDate).toLocaleDateString()}
+                                                <FiCalendar className="flex-shrink-0 text-primary-light" />
+                                                <span className="text-sm truncate">
+                                                    {new Date(discount.startDate).toLocaleDateString()} - {new Date(discount.endDate).toLocaleDateString()}
+                                                </span>
                                             </p>
-                                            <p className="text-gray-600 flex items-center gap-2">
-                                                <FiTag className="text-primary-light"/>
-                                                Used {discount.usedCount} times
-                                                {discount.usageLimit && ` (Limit: ${discount.usageLimit})`}
+                                            <p className="text-gray-600 flex items-center gap-2 truncate">
+                                                <FiTag className="flex-shrink-0 text-primary-light" />
+                                                <span className="truncate">
+                                                    Used {discount.usedCount} times
+                                                    {discount.usageLimit && ` (Limit: ${discount.usageLimit})`}
+                                                </span>
                                             </p>
                                         </div>
-                                        <div>
+                                        <div className="space-y-1 min-w-0">
                                             {discount.minPurchaseAmount > 0 && (
-                                                <p className="text-gray-600">
+                                                <p className="text-gray-600 truncate">
                                                     Min. Purchase: ${discount.minPurchaseAmount}
                                                 </p>
                                             )}
                                             {discount.maxDiscountAmount && (
-                                                <p className="text-gray-600">
+                                                <p className="text-gray-600 truncate">
                                                     Max. Discount: ${discount.maxDiscountAmount}
                                                 </p>
                                             )}
                                         </div>
                                     </div>
-                                    <p className="text-gray-700">{discount.description}</p>
+                                    <p className="text-gray-700 line-clamp-2">{discount.description}</p>
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex flex-row sm:flex-col gap-2 sm:flex-shrink-0">
                                     <button
                                         onClick={() => {
                                             setSelectedDiscount(discount);
@@ -270,15 +280,15 @@ const SellerDiscountManagement = () => {
                                             });
                                             setIsModalOpen(true);
                                         }}
-                                        className="p-2 text-blue-500 hover:bg-blue-50 rounded"
+                                        className="p-2 text-blue-500 hover:bg-blue-50 rounded flex-1 sm:flex-none"
                                     >
-                                        <FiEdit2 className="text-primary-light"/>
+                                        <FiEdit2 className="mx-auto" />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(discount._id)}
-                                        className="p-2 text-red-500 hover:bg-red-50 rounded"
+                                        className="p-2 text-red-500 hover:bg-red-50 rounded flex-1 sm:flex-none"
                                     >
-                                        <FiTrash2 />
+                                        <FiTrash2 className="mx-auto" />
                                     </button>
                                 </div>
                             </div>
@@ -289,14 +299,14 @@ const SellerDiscountManagement = () => {
 
             {/* Modal for creating/editing discounts */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-gray-700 p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-xl font-bold mb-4 text-white">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-background-dark p-4 sm:p-6 rounded-lg w-full max-w-2xl my-8">
+                        <h2 className="text-lg sm:text-xl font-bold mb-4 text-primary-light">
                             {selectedDiscount ? 'Edit Discount' : 'Create New Discount'}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {/* Basic Information */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-300">Code*</label>
                                     <input
@@ -531,7 +541,7 @@ const SellerDiscountManagement = () => {
                                 </div>
                             </div>
 
-                            <div className="flex justify-end gap-2 mt-6">
+                            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-6">
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -539,13 +549,13 @@ const SellerDiscountManagement = () => {
                                         setSelectedDiscount(null);
                                         resetForm();
                                     }}
-                                    className="px-4 py-2 text-sm text-gray-400 hover:text-gray-600"
+                                    className="px-4 py-2 text-sm text-primary hover:text-primary-light/80 w-full sm:w-auto"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                    className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-dark w-full sm:w-auto"
                                 >
                                     {selectedDiscount ? 'Update' : 'Create'}
                                 </button>
