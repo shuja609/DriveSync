@@ -9,7 +9,8 @@ import {
     FiMenu,
     FiX,
     FiMessageSquare,
-    FiShoppingCart
+    FiShoppingCart,
+    FiTag
 } from 'react-icons/fi';
 
 const menuItems = [
@@ -18,6 +19,7 @@ const menuItems = [
     { path: '/sales/orders', icon: FiShoppingCart, label: 'Orders' },
     { path: '/sales/quotations', icon: FiFileText, label: 'Quotations' },
     { path: '/sales/inquiries', icon: FiMessageSquare, label: 'Inquiries' },
+    { path: '/sales/discounts', icon: FiTag, label: 'Discounts' },
     { path: '/sales/settings', icon: FiSettings, label: 'Settings' }
 ];
 
